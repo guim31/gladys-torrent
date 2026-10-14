@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-14
+
 ### Added
 
 - Follow and control up to three torrent clients over the local network:
@@ -33,4 +35,5 @@ the notes of the version's GitHub Release.
   the four languages.
 - The integration never deletes a torrent or a file.
 
-[Unreleased]: https://github.com/guim31/gladys-torrent/commits/main
+[Unreleased]: https://github.com/guim31/gladys-torrent/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-torrent/releases/tag/v1.0.1
