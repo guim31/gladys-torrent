@@ -1,0 +1,37 @@
+{
+  "rid": 6,
+  "server_state": {
+    "alltime_dl": 39384672,
+    "alltime_ul": 1127902,
+    "dl_info_speed": 0,
+    "dl_rate_limit": 10240,
+    "total_peer_connections": 0,
+    "total_wasted_session": 23142,
+    "up_rate_limit": 10240,
+    "use_alt_speed_limits": true
+  },
+  "torrents": {
+    "026a771e6576fb1e05e102ef0f1615e2732a0667": {
+      "availability": 0.6000000238418579,
+      "dlspeed": 0,
+      "downloaded": 18274918,
+      "eta": 8640000,
+      "num_seeds": 0,
+      "seen_complete": 1792005583,
+      "state": "pausedDL",
+      "time_active": 34
+    },
+    "f0f72a7a266aba79d6c5e031c93813ce733c6996": {
+      "dlspeed": 0,
+      "seeding_time": 17,
+      "state": "pausedUP",
+      "time_active": 34
+    },
+    "ffc3d6947d79e038b9b7befe9d750bb620517e8b": {
+      "dlspeed": 0,
+      "seeding_time": 13,
+      "state": "pausedUP",
+      "time_active": 34
+    }
+  }
+}

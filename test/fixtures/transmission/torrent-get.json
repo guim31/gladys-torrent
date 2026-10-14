@@ -1,0 +1,59 @@
+{
+  "arguments": {
+    "torrents": [
+      {
+        "addedDate": 1792005536,
+        "downloadedEver": 0,
+        "error": 0,
+        "hashString": "eec029a38711cd65322e7f0fe11207ee40e06e44",
+        "labels": [],
+        "metadataPercentComplete": 1,
+        "name": "Ubuntu-Test-Image.iso",
+        "percentDone": 1,
+        "rateDownload": 0,
+        "sizeWhenDone": 30000000,
+        "status": 6
+      },
+      {
+        "addedDate": 1792005536,
+        "downloadedEver": 0,
+        "error": 0,
+        "hashString": "fd1b37d818ba50d5f8373bcfe3a5076245165d57",
+        "labels": [],
+        "metadataPercentComplete": 1,
+        "name": "Debian-Netinst.iso",
+        "percentDone": 1,
+        "rateDownload": 0,
+        "sizeWhenDone": 8000000,
+        "status": 6
+      },
+      {
+        "addedDate": 1792005536,
+        "downloadedEver": 0,
+        "error": 0,
+        "hashString": "278d363ccc19dfd2b1de555caf78eb9c9c21aec9",
+        "labels": [],
+        "metadataPercentComplete": 1,
+        "name": "Big Buck Bunny (2008)",
+        "percentDone": 1,
+        "rateDownload": 0,
+        "sizeWhenDone": 12000000,
+        "status": 6
+      },
+      {
+        "addedDate": 1792006249,
+        "downloadedEver": 0,
+        "error": 0,
+        "hashString": "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c",
+        "labels": [],
+        "metadataPercentComplete": 0,
+        "name": "Big+Buck+Bunny",
+        "percentDone": 0,
+        "rateDownload": 0,
+        "sizeWhenDone": 0,
+        "status": 4
+      }
+    ]
+  },
+  "result": "success"
+}

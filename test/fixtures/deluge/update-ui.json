@@ -1,0 +1,74 @@
+{
+  "result": {
+    "connected": true,
+    "torrents": {
+      "026a771e6576fb1e05e102ef0f1615e2732a0667": {
+        "state": "Paused",
+        "all_time_download": 0,
+        "download_payload_rate": 0,
+        "progress": 0.054600004106760025,
+        "time_added": 1792005599,
+        "total_wanted": 30000000,
+        "name": "Ubuntu-Test-Image.iso"
+      },
+      "f0f72a7a266aba79d6c5e031c93813ce733c6996": {
+        "state": "Seeding",
+        "all_time_download": 8000000,
+        "download_payload_rate": 0,
+        "progress": 100.0,
+        "time_added": 1792005599,
+        "total_wanted": 8000000,
+        "name": "Debian-Netinst.iso"
+      },
+      "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c": {
+        "state": "Downloading",
+        "all_time_download": 0,
+        "download_payload_rate": 0,
+        "progress": 0.0,
+        "time_added": 1792005620,
+        "total_wanted": 0,
+        "name": "Big Buck Bunny"
+      }
+    },
+    "filters": {
+      "state": [
+        ["All", 3],
+        ["Active", 0],
+        ["Allocating", 0],
+        ["Checking", 0],
+        ["Downloading", 1],
+        ["Seeding", 1],
+        ["Paused", 1],
+        ["Error", 0],
+        ["Queued", 0],
+        ["Moving", 0]
+      ],
+      "tracker_host": [
+        ["", 1],
+        ["All", 3],
+        ["Error", 2],
+        ["tracker.invalid", 2]
+      ],
+      "owner": [
+        ["", 0],
+        ["localclient", 3]
+      ]
+    },
+    "stats": {
+      "max_download": 1500.0,
+      "max_upload": -1.0,
+      "max_num_connections": 200,
+      "num_connections": 2,
+      "upload_rate": 0.0,
+      "download_rate": 0.0,
+      "download_protocol_rate": 0.0,
+      "upload_protocol_rate": 0.0,
+      "dht_nodes": 1,
+      "has_incoming_connections": 1,
+      "free_space": 31722606592,
+      "external_ip": "192.0.2.2"
+    }
+  },
+  "error": null,
+  "id": 1
+}

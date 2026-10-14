@@ -1,177 +1,1098 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "qBittorrent / Transmission",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Follow and control qBittorrent, Transmission or Deluge: speeds, downloads, pause, slow-down.",
+    "fr": "Suivez et pilotez qBittorrent, Transmission ou Deluge : débits, téléchargements, pause, bridage.",
+    "de": "Verfolge und steuere qBittorrent, Transmission oder Deluge: Tempo, Downloads, Pause, Drosseln.",
+    "es": "Siga y controle qBittorrent, Transmission o Deluge: velocidades, descargas, pausa, freno."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-torrent:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-torrent/main/cover.png",
+  "categories": ["multimedia", "network"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Your torrent clients",
+        "fr": "Vos clients torrent",
+        "de": "Deine Torrent-Clients",
+        "es": "Sus clientes torrent"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "qBittorrent (web interface on), Transmission (remote access on) or Deluge (web interface, deluge-web). Up to three clients, on your network. Never deletes a torrent nor a file.",
+        "fr": "qBittorrent (interface web activée), Transmission (accès à distance activé) ou Deluge (interface web, deluge-web). Jusqu'à trois clients, sur votre réseau. Ne supprime jamais ni torrent ni fichier.",
+        "de": "qBittorrent (Weboberfläche an), Transmission (Fernzugriff an) oder Deluge (Weboberfläche, deluge-web). Bis zu drei Clients in deinem Netzwerk. Löscht nie einen Torrent oder eine Datei.",
+        "es": "qBittorrent (interfaz web activada), Transmission (acceso remoto activado) o Deluge (interfaz web, deluge-web). Hasta tres clientes en su red. Nunca borra un torrent ni un archivo."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)",
+          "label": {
+            "en": "qBittorrent Web API",
+            "fr": "API web de qBittorrent",
+            "de": "qBittorrent-Web-API",
+            "es": "API web de qBittorrent"
+          }
+        },
+        {
+          "url": "https://github.com/transmission/transmission/blob/main/docs/rpc-spec.md",
+          "label": {
+            "en": "Transmission RPC",
+            "fr": "RPC de Transmission",
+            "de": "Transmission-RPC",
+            "es": "RPC de Transmission"
+          }
+        },
+        {
+          "url": "https://deluge.readthedocs.io/en/latest/reference/web.html",
+          "label": {
+            "en": "Deluge web interface",
+            "fr": "Interface web de Deluge",
+            "de": "Deluge-Weboberfläche",
+            "es": "Interfaz web de Deluge"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
+      "key": "client_1_type",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "label": {
+        "en": "Software",
+        "fr": "Logiciel",
+        "de": "Software",
+        "es": "Programa"
+      },
       "required": false,
-      "default": "celsius",
+      "default": "qbittorrent",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "qbittorrent",
+          "label": {
+            "en": "qBittorrent",
+            "fr": "qBittorrent",
+            "de": "qBittorrent",
+            "es": "qBittorrent"
+          }
+        },
+        {
+          "value": "transmission",
+          "label": {
+            "en": "Transmission",
+            "fr": "Transmission",
+            "de": "Transmission",
+            "es": "Transmission"
+          }
+        },
+        {
+          "value": "deluge",
+          "label": {
+            "en": "Deluge (web interface)",
+            "fr": "Deluge (interface web)",
+            "de": "Deluge (Weboberfläche)",
+            "es": "Deluge (interfaz web)"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "client_1_url",
+      "type": "string",
+      "label": {
+        "en": "Address",
+        "fr": "Adresse",
+        "de": "Adresse",
+        "es": "Dirección"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112. https:// for HTTPS.",
+        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112. https:// pour le HTTPS.",
+        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112. https:// für HTTPS.",
+        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112. https:// para HTTPS."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.10:8080",
+        "fr": "ex. 192.168.1.10:8080",
+        "de": "z. B. 192.168.1.10:8080",
+        "es": "p. ej. 192.168.1.10:8080"
+      },
+      "required": true,
+      "default": ""
+    },
+    {
+      "key": "client_1_username",
+      "type": "string",
+      "label": {
+        "en": "User name",
+        "fr": "Nom d'utilisateur",
+        "de": "Benutzername",
+        "es": "Nombre de usuario"
+      },
+      "description": {
+        "en": "qBittorrent and Transmission. Empty if the client asks for none. Deluge: leave empty.",
+        "fr": "qBittorrent et Transmission. Vide si le client n'en demande pas. Deluge : laissez vide.",
+        "de": "qBittorrent und Transmission. Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
+        "es": "qBittorrent y Transmission. Vacío si el cliente no lo pide. Deluge: déjelo vacío."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": ""
+    },
+    {
+      "key": "client_1_password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Password of the web interface (Deluge: \"deluge\" until changed). Empty if none.",
+        "fr": "Mot de passe de l'interface web (Deluge : « deluge » tant qu'il n'a pas été changé). Vide si aucun.",
+        "de": "Passwort der Weboberfläche (Deluge: „deluge“, solange nicht geändert). Leer, wenn keins.",
+        "es": "Contraseña de la interfaz web (Deluge: «deluge» mientras no se cambie). Vacío si no hay."
+      },
+      "required": false
+    },
+    {
+      "key": "client_1_name",
+      "type": "string",
+      "label": {
+        "en": "Name",
+        "fr": "Nom",
+        "de": "Name",
+        "es": "Nombre"
+      },
+      "description": {
+        "en": "Name of the device in Gladys. Empty: the software followed by the address.",
+        "fr": "Nom de l'appareil dans Gladys. Vide : le logiciel suivi de l'adresse.",
+        "de": "Name des Geräts in Gladys. Leer: die Software gefolgt von der Adresse.",
+        "es": "Nombre del dispositivo en Gladys. Vacío: el programa seguido de la dirección."
+      },
+      "placeholder": {
+        "en": "e.g. NAS downloads",
+        "fr": "ex. Téléchargements NAS",
+        "de": "z. B. NAS-Downloads",
+        "es": "p. ej. Descargas NAS"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "client_2",
+      "type": "section",
+      "label": {
+        "en": "Second client (optional)",
+        "fr": "Deuxième client (facultatif)",
+        "de": "Zweiter Client (optional)",
+        "es": "Segundo cliente (opcional)"
+      },
+      "description": {
+        "en": "Same fields, for another torrent client: another software, or another instance.",
+        "fr": "Les mêmes champs, pour un autre client torrent : un autre logiciel ou une autre instance.",
+        "de": "Dieselben Felder, für einen weiteren Torrent-Client: andere Software oder andere Instanz.",
+        "es": "Los mismos campos, para otro cliente torrent: otro programa u otra instancia."
+      }
+    },
+    {
+      "key": "client_2_type",
+      "type": "select",
+      "label": {
+        "en": "Software",
+        "fr": "Logiciel",
+        "de": "Software",
+        "es": "Programa"
+      },
+      "required": false,
+      "default": "transmission",
+      "options": [
+        {
+          "value": "qbittorrent",
+          "label": {
+            "en": "qBittorrent",
+            "fr": "qBittorrent",
+            "de": "qBittorrent",
+            "es": "qBittorrent"
+          }
+        },
+        {
+          "value": "transmission",
+          "label": {
+            "en": "Transmission",
+            "fr": "Transmission",
+            "de": "Transmission",
+            "es": "Transmission"
+          }
+        },
+        {
+          "value": "deluge",
+          "label": {
+            "en": "Deluge (web interface)",
+            "fr": "Deluge (interface web)",
+            "de": "Deluge (Weboberfläche)",
+            "es": "Deluge (interfaz web)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "client_2_url",
+      "type": "string",
+      "label": {
+        "en": "Address",
+        "fr": "Adresse",
+        "de": "Adresse",
+        "es": "Dirección"
+      },
+      "description": {
+        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112. https:// for HTTPS.",
+        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112. https:// pour le HTTPS.",
+        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112. https:// für HTTPS.",
+        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112. https:// para HTTPS."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.10:8080",
+        "fr": "ex. 192.168.1.10:8080",
+        "de": "z. B. 192.168.1.10:8080",
+        "es": "p. ej. 192.168.1.10:8080"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "client_2_username",
+      "type": "string",
+      "label": {
+        "en": "User name",
+        "fr": "Nom d'utilisateur",
+        "de": "Benutzername",
+        "es": "Nombre de usuario"
+      },
+      "description": {
+        "en": "qBittorrent and Transmission. Empty if the client asks for none. Deluge: leave empty.",
+        "fr": "qBittorrent et Transmission. Vide si le client n'en demande pas. Deluge : laissez vide.",
+        "de": "qBittorrent und Transmission. Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
+        "es": "qBittorrent y Transmission. Vacío si el cliente no lo pide. Deluge: déjelo vacío."
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "client_2_password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Password of the web interface (Deluge: \"deluge\" until changed). Empty if none.",
+        "fr": "Mot de passe de l'interface web (Deluge : « deluge » tant qu'il n'a pas été changé). Vide si aucun.",
+        "de": "Passwort der Weboberfläche (Deluge: „deluge“, solange nicht geändert). Leer, wenn keins.",
+        "es": "Contraseña de la interfaz web (Deluge: «deluge» mientras no se cambie). Vacío si no hay."
+      },
+      "required": false
+    },
+    {
+      "key": "client_2_name",
+      "type": "string",
+      "label": {
+        "en": "Name",
+        "fr": "Nom",
+        "de": "Name",
+        "es": "Nombre"
+      },
+      "description": {
+        "en": "Name of the device in Gladys. Empty: the software followed by the address.",
+        "fr": "Nom de l'appareil dans Gladys. Vide : le logiciel suivi de l'adresse.",
+        "de": "Name des Geräts in Gladys. Leer: die Software gefolgt von der Adresse.",
+        "es": "Nombre del dispositivo en Gladys. Vacío: el programa seguido de la dirección."
+      },
+      "placeholder": {
+        "en": "e.g. NAS downloads",
+        "fr": "ex. Téléchargements NAS",
+        "de": "z. B. NAS-Downloads",
+        "es": "p. ej. Descargas NAS"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "client_3",
+      "type": "section",
+      "label": {
+        "en": "Third client (optional)",
+        "fr": "Troisième client (facultatif)",
+        "de": "Dritter Client (optional)",
+        "es": "Tercer cliente (opcional)"
+      },
+      "description": {
+        "en": "Same fields, for another torrent client: another software, or another instance.",
+        "fr": "Les mêmes champs, pour un autre client torrent : un autre logiciel ou une autre instance.",
+        "de": "Dieselben Felder, für einen weiteren Torrent-Client: andere Software oder andere Instanz.",
+        "es": "Los mismos campos, para otro cliente torrent: otro programa u otra instancia."
+      }
+    },
+    {
+      "key": "client_3_type",
+      "type": "select",
+      "label": {
+        "en": "Software",
+        "fr": "Logiciel",
+        "de": "Software",
+        "es": "Programa"
+      },
+      "required": false,
+      "default": "deluge",
+      "options": [
+        {
+          "value": "qbittorrent",
+          "label": {
+            "en": "qBittorrent",
+            "fr": "qBittorrent",
+            "de": "qBittorrent",
+            "es": "qBittorrent"
+          }
+        },
+        {
+          "value": "transmission",
+          "label": {
+            "en": "Transmission",
+            "fr": "Transmission",
+            "de": "Transmission",
+            "es": "Transmission"
+          }
+        },
+        {
+          "value": "deluge",
+          "label": {
+            "en": "Deluge (web interface)",
+            "fr": "Deluge (interface web)",
+            "de": "Deluge (Weboberfläche)",
+            "es": "Deluge (interfaz web)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "client_3_url",
+      "type": "string",
+      "label": {
+        "en": "Address",
+        "fr": "Adresse",
+        "de": "Adresse",
+        "es": "Dirección"
+      },
+      "description": {
+        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112. https:// for HTTPS.",
+        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112. https:// pour le HTTPS.",
+        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112. https:// für HTTPS.",
+        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112. https:// para HTTPS."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.10:8080",
+        "fr": "ex. 192.168.1.10:8080",
+        "de": "z. B. 192.168.1.10:8080",
+        "es": "p. ej. 192.168.1.10:8080"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "client_3_username",
+      "type": "string",
+      "label": {
+        "en": "User name",
+        "fr": "Nom d'utilisateur",
+        "de": "Benutzername",
+        "es": "Nombre de usuario"
+      },
+      "description": {
+        "en": "qBittorrent and Transmission. Empty if the client asks for none. Deluge: leave empty.",
+        "fr": "qBittorrent et Transmission. Vide si le client n'en demande pas. Deluge : laissez vide.",
+        "de": "qBittorrent und Transmission. Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
+        "es": "qBittorrent y Transmission. Vacío si el cliente no lo pide. Deluge: déjelo vacío."
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "client_3_password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Password of the web interface (Deluge: \"deluge\" until changed). Empty if none.",
+        "fr": "Mot de passe de l'interface web (Deluge : « deluge » tant qu'il n'a pas été changé). Vide si aucun.",
+        "de": "Passwort der Weboberfläche (Deluge: „deluge“, solange nicht geändert). Leer, wenn keins.",
+        "es": "Contraseña de la interfaz web (Deluge: «deluge» mientras no se cambie). Vacío si no hay."
+      },
+      "required": false
+    },
+    {
+      "key": "client_3_name",
+      "type": "string",
+      "label": {
+        "en": "Name",
+        "fr": "Nom",
+        "de": "Name",
+        "es": "Nombre"
+      },
+      "description": {
+        "en": "Name of the device in Gladys. Empty: the software followed by the address.",
+        "fr": "Nom de l'appareil dans Gladys. Vide : le logiciel suivi de l'adresse.",
+        "de": "Name des Geräts in Gladys. Leer: die Software gefolgt von der Adresse.",
+        "es": "Nombre del dispositivo en Gladys. Vacío: el programa seguido de la dirección."
+      },
+      "placeholder": {
+        "en": "e.g. NAS downloads",
+        "fr": "ex. Téléchargements NAS",
+        "de": "z. B. NAS-Downloads",
+        "es": "p. ej. Descargas NAS"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "options",
+      "type": "section",
+      "label": {
+        "en": "Options",
+        "fr": "Options",
+        "de": "Optionen",
+        "es": "Opciones"
+      }
+    },
+    {
+      "key": "allow_self_signed",
+      "type": "boolean",
+      "label": {
+        "en": "Accept self-signed certificates",
+        "fr": "Accepter les certificats auto-signés",
+        "de": "Selbstsignierte Zertifikate akzeptieren",
+        "es": "Aceptar certificados autofirmados"
+      },
+      "description": {
+        "en": "For a client served in HTTPS with its own certificate (common on a NAS).",
+        "fr": "Pour un client servi en HTTPS avec son propre certificat (fréquent sur un NAS).",
+        "de": "Für einen Client, der über HTTPS mit eigenem Zertifikat läuft (häufig auf einem NAS).",
+        "es": "Para un cliente servido en HTTPS con su propio certificado (frecuente en un NAS)."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "poll_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Intervalle de rafraîchissement",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "How often the clients are read. Also the delay of the \"Download completed\" trigger.",
+        "fr": "Fréquence de lecture des clients. C'est aussi le délai du déclencheur « Téléchargement terminé ».",
+        "de": "Wie oft die Clients gelesen werden. Auch die Verzögerung des Auslösers „Download abgeschlossen“.",
+        "es": "Frecuencia de lectura de los clientes. También el retraso del disparador «Descarga completada»."
+      },
+      "required": false,
+      "default": "30",
+      "options": [
+        {
+          "value": "10",
+          "label": {
+            "en": "10 seconds",
+            "fr": "10 secondes",
+            "de": "10 Sekunden",
+            "es": "10 segundos"
+          }
+        },
+        {
+          "value": "15",
+          "label": {
+            "en": "15 seconds",
+            "fr": "15 secondes",
+            "de": "15 Sekunden",
+            "es": "15 segundos"
+          }
+        },
+        {
+          "value": "30",
+          "label": {
+            "en": "30 seconds",
+            "fr": "30 secondes",
+            "de": "30 Sekunden",
+            "es": "30 segundos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "2 minutes",
+            "fr": "2 minutes",
+            "de": "2 Minuten",
+            "es": "2 minutos"
+          }
+        }
+      ]
+    },
+    {
+      "key": "allow_magnet",
+      "type": "boolean",
+      "label": {
+        "en": "Allow adding magnet links",
+        "fr": "Autoriser l'ajout de liens magnet",
+        "de": "Magnet-Links erlauben",
+        "es": "Permitir añadir enlaces magnet"
+      },
+      "description": {
+        "en": "Lets the scenes add a torrent by its magnet link. Off by default: whoever can edit a scene could then start a download.",
+        "fr": "Permet aux scènes d'ajouter un torrent par son lien magnet. Désactivé par défaut : quiconque peut modifier une scène pourrait lancer un téléchargement.",
+        "de": "Erlaubt Szenen, einen Torrent per Magnet-Link hinzuzufügen. Standardmäßig aus: Wer eine Szene bearbeiten kann, könnte sonst einen Download starten.",
+        "es": "Permite que las escenas añadan un torrent por su enlace magnet. Desactivado por defecto: quien pueda editar una escena podría iniciar una descarga."
+      },
+      "required": false,
+      "default": false
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the device texts",
+        "fr": "Langue des textes des appareils",
+        "de": "Sprache der Gerätetexte",
+        "es": "Idioma de los textos de los dispositivos"
+      },
+      "description": {
+        "en": "Feature names (set when the device is added) and texts sent by the integration.",
+        "fr": "Noms des fonctionnalités (fixés à l'ajout de l'appareil) et textes envoyés par l'intégration.",
+        "de": "Namen der Funktionen (beim Hinzufügen des Geräts festgelegt) und Texte der Integration.",
+        "es": "Nombres de las funciones (fijados al añadir el dispositivo) y textos enviados por la integración."
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "download_completed",
+      "label": {
+        "en": "Download completed",
+        "fr": "Téléchargement terminé",
+        "de": "Download abgeschlossen",
+        "es": "Descarga completada"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A torrent finished downloading (not one added with its files already there).",
+        "fr": "Un torrent a fini de se télécharger (pas un torrent ajouté avec ses fichiers déjà présents).",
+        "de": "Ein Torrent ist fertig heruntergeladen (keiner, der mit vorhandenen Dateien hinzugefügt wurde).",
+        "es": "Un torrent ha terminado de descargarse (no uno añadido con sus archivos ya presentes)."
       },
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "key": "category",
+          "type": "string",
+          "label": {
+            "en": "Category or label",
+            "fr": "Catégorie ou étiquette",
+            "de": "Kategorie oder Label",
+            "es": "Categoría o etiqueta"
+          },
+          "description": {
+            "en": "Only the torrents of this qBittorrent category, Transmission or Deluge label. Empty: all.",
+            "fr": "Seulement les torrents de cette catégorie qBittorrent, étiquette Transmission ou Deluge. Vide : tous.",
+            "de": "Nur die Torrents dieser qBittorrent-Kategorie bzw. dieses Transmission- oder Deluge-Labels. Leer: alle.",
+            "es": "Solo los torrents de esta categoría de qBittorrent o etiqueta de Transmission o Deluge. Vacío: todos."
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Torrent name",
+            "fr": "Nom du torrent",
+            "de": "Name des Torrents",
+            "es": "Nombre del torrent"
+          }
+        },
+        {
+          "key": "client",
+          "type": "string",
+          "label": {
+            "en": "Client name",
+            "fr": "Nom du client",
+            "de": "Name des Clients",
+            "es": "Nombre del cliente"
+          }
+        },
+        {
+          "key": "category",
+          "type": "string",
+          "label": {
+            "en": "Category or label",
+            "fr": "Catégorie ou étiquette",
+            "de": "Kategorie oder Label",
+            "es": "Categoría o etiqueta"
+          }
+        },
+        {
+          "key": "size_gb",
+          "type": "number",
+          "label": {
+            "en": "Size (GB)",
+            "fr": "Taille (Go)",
+            "de": "Größe (GB)",
+            "es": "Tamaño (GB)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "torrent_added",
+      "label": {
+        "en": "New torrent added",
+        "fr": "Nouveau torrent ajouté",
+        "de": "Neuer Torrent hinzugefügt",
+        "es": "Nuevo torrent añadido"
+      },
+      "description": {
+        "en": "A torrent was added to the client, by anyone (announced once its name is known).",
+        "fr": "Un torrent a été ajouté au client, par n'importe qui (annoncé dès que son nom est connu).",
+        "de": "Ein Torrent wurde dem Client hinzugefügt, von wem auch immer (gemeldet, sobald sein Name bekannt ist).",
+        "es": "Se ha añadido un torrent al cliente, por quien sea (se anuncia en cuanto se conoce su nombre)."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          }
+        },
+        {
+          "key": "category",
+          "type": "string",
+          "label": {
+            "en": "Category or label",
+            "fr": "Catégorie ou étiquette",
+            "de": "Kategorie oder Label",
+            "es": "Categoría o etiqueta"
+          },
+          "description": {
+            "en": "Only the torrents of this qBittorrent category, Transmission or Deluge label. Empty: all.",
+            "fr": "Seulement les torrents de cette catégorie qBittorrent, étiquette Transmission ou Deluge. Vide : tous.",
+            "de": "Nur die Torrents dieser qBittorrent-Kategorie bzw. dieses Transmission- oder Deluge-Labels. Leer: alle.",
+            "es": "Solo los torrents de esta categoría de qBittorrent o etiqueta de Transmission o Deluge. Vacío: todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "name",
+          "type": "string",
+          "label": {
+            "en": "Torrent name",
+            "fr": "Nom du torrent",
+            "de": "Name des Torrents",
+            "es": "Nombre del torrent"
+          }
+        },
+        {
+          "key": "client",
+          "type": "string",
+          "label": {
+            "en": "Client name",
+            "fr": "Nom du client",
+            "de": "Name des Clients",
+            "es": "Nombre del cliente"
+          }
+        },
+        {
+          "key": "category",
+          "type": "string",
+          "label": {
+            "en": "Category or label",
+            "fr": "Catégorie ou étiquette",
+            "de": "Kategorie oder Label",
+            "es": "Categoría o etiqueta"
+          }
+        },
+        {
+          "key": "size_gb",
+          "type": "number",
+          "label": {
+            "en": "Size (GB)",
+            "fr": "Taille (Go)",
+            "de": "Größe (GB)",
+            "es": "Tamaño (GB)"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "pause_all",
+      "label": {
+        "en": "Pause all torrents",
+        "fr": "Mettre tous les torrents en pause",
+        "de": "Alle Torrents pausieren",
+        "es": "Pausar todos los torrents"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Pauses every torrent of the client, or of every client.",
+        "fr": "Met en pause tous les torrents du client, ou de tous les clients.",
+        "de": "Pausiert alle Torrents des Clients oder aller Clients.",
+        "es": "Pausa todos los torrents del cliente, o de todos los clientes."
+      },
+      "timeout_seconds": 30,
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          },
+          "description": {
+            "en": "Empty: every client.",
+            "fr": "Vide : tous les clients.",
+            "de": "Leer: alle Clients.",
+            "es": "Vacío: todos los clientes."
+          }
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "clients",
+          "type": "number",
+          "label": {
+            "en": "Clients that accepted",
+            "fr": "Clients qui ont accepté",
+            "de": "Clients, die angenommen haben",
+            "es": "Clientes que han aceptado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "resume_all",
+      "label": {
+        "en": "Resume all torrents",
+        "fr": "Reprendre tous les torrents",
+        "de": "Alle Torrents fortsetzen",
+        "es": "Reanudar todos los torrents"
+      },
+      "description": {
+        "en": "Resumes every torrent of the client, or of every client.",
+        "fr": "Reprend tous les torrents du client, ou de tous les clients.",
+        "de": "Setzt alle Torrents des Clients oder aller Clients fort.",
+        "es": "Reanuda todos los torrents del cliente, o de todos los clientes."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          },
+          "description": {
+            "en": "Empty: every client.",
+            "fr": "Vide : tous les clients.",
+            "de": "Leer: alle Clients.",
+            "es": "Vacío: todos los clientes."
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "clients",
+          "type": "number",
+          "label": {
+            "en": "Clients that accepted",
+            "fr": "Clients qui ont accepté",
+            "de": "Clients, die angenommen haben",
+            "es": "Clientes que han aceptado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "set_alt_speed",
+      "label": {
+        "en": "Alternative speed limits",
+        "fr": "Limites de vitesse alternatives",
+        "de": "Alternative Geschwindigkeitslimits",
+        "es": "Límites de velocidad alternativos"
+      },
+      "description": {
+        "en": "Turns the alternative speed limits (Transmission: turtle mode) on or off. qBittorrent and Transmission.",
+        "fr": "Active ou désactive les limites de vitesse alternatives (Transmission : mode tortue). qBittorrent et Transmission.",
+        "de": "Schaltet die alternativen Geschwindigkeitslimits (Transmission: Schildkrötenmodus) an oder aus. qBittorrent und Transmission.",
+        "es": "Activa o desactiva los límites de velocidad alternativos (Transmission: modo tortuga). qBittorrent y Transmission."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          },
+          "description": {
+            "en": "Empty: every client.",
+            "fr": "Vide : tous les clients.",
+            "de": "Leer: alle Clients.",
+            "es": "Vacío: todos los clientes."
+          }
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": {
+            "en": "Limits",
+            "fr": "Limites",
+            "de": "Limits",
+            "es": "Límites"
+          },
+          "required": true,
+          "default": "on",
+          "options": [
+            {
+              "value": "on",
+              "label": {
+                "en": "On",
+                "fr": "Activées",
+                "de": "An",
+                "es": "Activados"
+              }
+            },
+            {
+              "value": "off",
+              "label": {
+                "en": "Off",
+                "fr": "Désactivées",
+                "de": "Aus",
+                "es": "Desactivados"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "clients",
+          "type": "number",
+          "label": {
+            "en": "Clients that accepted",
+            "fr": "Clients qui ont accepté",
+            "de": "Clients, die angenommen haben",
+            "es": "Clientes que han aceptado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "add_magnet",
+      "label": {
+        "en": "Add a magnet link",
+        "fr": "Ajouter un lien magnet",
+        "de": "Magnet-Link hinzufügen",
+        "es": "Añadir un enlace magnet"
+      },
+      "description": {
+        "en": "Adds a torrent by its magnet link. Only if allowed in the configuration (off by default).",
+        "fr": "Ajoute un torrent par son lien magnet. Seulement si la configuration l'autorise (désactivé par défaut).",
+        "de": "Fügt einen Torrent per Magnet-Link hinzu. Nur wenn in der Konfiguration erlaubt (standardmäßig aus).",
+        "es": "Añade un torrent por su enlace magnet. Solo si la configuración lo permite (desactivado por defecto)."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          },
+          "description": {
+            "en": "Empty: the first client of the configuration.",
+            "fr": "Vide : le premier client de la configuration.",
+            "de": "Leer: der erste Client der Konfiguration.",
+            "es": "Vacío: el primer cliente de la configuración."
+          }
+        },
+        {
+          "key": "magnet",
+          "type": "string",
+          "label": {
+            "en": "Magnet link",
+            "fr": "Lien magnet",
+            "de": "Magnet-Link",
+            "es": "Enlace magnet"
+          },
+          "required": true,
+          "placeholder": {
+            "en": "magnet:?xt=urn:btih:…",
+            "fr": "magnet:?xt=urn:btih:…",
+            "de": "magnet:?xt=urn:btih:…",
+            "es": "magnet:?xt=urn:btih:…"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "key": "hash",
+          "type": "string",
+          "label": {
+            "en": "Info hash",
+            "fr": "Empreinte (info hash)",
+            "de": "Info-Hash",
+            "es": "Hash de información"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "torrents",
+      "label": {
+        "en": "Torrents",
+        "fr": "Torrents",
+        "de": "Torrents",
+        "es": "Torrents"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Speeds, downloads in progress with their percentage, pause and slow-down buttons.",
+        "fr": "Débits, téléchargements en cours avec leur pourcentage, boutons pause et ralentir.",
+        "de": "Geschwindigkeiten, laufende Downloads mit Prozent, Tasten für Pause und Drosseln.",
+        "es": "Velocidades, descargas en curso con su porcentaje, botones de pausa y de frenado."
+      },
+      "icon": "download-cloud",
+      "settings": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Torrent client",
+            "fr": "Client torrent",
+            "de": "Torrent-Client",
+            "es": "Cliente torrent"
+          },
+          "description": {
+            "en": "Empty: every client.",
+            "fr": "Vide : tous les clients.",
+            "de": "Leer: alle Clients.",
+            "es": "Vacío: todos los clientes."
+          }
+        }
+      ],
+      "action_timeout_seconds": 30
     }
   ]
 }

@@ -1,67 +1,227 @@
-# Template de démonstration
+# qBittorrent / Transmission
 
-Ceci est la documentation utilisateur de l'intégration. Gladys ré-héberge ce
-fichier et affiche un lien **Documentation** permanent vers lui dans l'écran
-de configuration (dans la langue de l'utilisateur, avec l'anglais en repli) —
-c'est au moment de configurer que l'utilisateur en a le plus besoin. Gardez
-les courtes indications d'accueil dans les blocs `section` du `config_schema`
-du manifest ; mettez ici le pas-à-pas détaillé (captures d'écran, dépannage…).
+Suivez et pilotez depuis Gladys les clients torrent de votre serveur maison,
+sur votre réseau local : **qBittorrent**, **Transmission** et **Deluge**. Voyez
+les débits descendant et montant et les téléchargements en cours, bridez tout
+quand un film démarre sur la télé, mettez tout en pause, et soyez prévenu quand
+un téléchargement est terminé.
 
-## Ce que vous obtenez
+> **Testée sur les vrais logiciels, pas encore dans une vraie maison : vos
+> retours sont les bienvenus.** Cette intégration a été testée contre
+> qBittorrent 4.6.3 et 5.2.4, Transmission 4.0.5 et Deluge 2.1 lancés à côté
+> d'elle, avec des téléchargements entre eux, mais pas encore dans une vraie
+> installation Gladys avec votre NAS, votre proxy inverse ou votre Docker. Si
+> quelque chose ne marche pas comme décrit, dites-le sur le
+> [forum Gladys](https://community.gladysassistant.com) ou dans les
+> [issues](https://github.com/guim31/gladys-torrent/issues).
 
-Six appareils de démonstration apparaissent après l'installation : une
-station météo (vraies données Open-Meteo), un interrupteur, une lampe
-variable, une prise connectée avec mesure de puissance, un détecteur de
-mouvement et une caméra.
+L'intégration ne supprime jamais ni torrent ni fichier. Ses commandes sont la
+pause, la reprise et les limites de vitesse alternatives, toutes réversibles ;
+l'ajout de liens magnet est désactivé tant que vous ne l'autorisez pas.
 
-## Configuration
+## Ce qu'il faut
 
-1. Ouvrez l'onglet **Configuration** de l'intégration.
-2. Renseignez la **latitude** et la **longitude** que la station météo de
-   démonstration doit observer (Paris par défaut), et choisissez votre unité
-   de température. L'**intervalle de rafraîchissement** règle la fréquence
-   de lecture de la station météo et de la puissance de la prise : toutes
-   les 5 minutes par défaut, toutes les minutes au plus.
-3. Enregistrez : les appareils apparaissent dans l'onglet **Découverte**,
-   prêts à être ajoutés.
+- Gladys Assistant 5.1.0 ou plus récent.
+- Un à trois clients torrent joignables depuis Gladys, dans n'importe quel
+  mélange :
+  - **qBittorrent** 4.1 ou plus récent avec son **interface web** activée
+    (Outils → Options → Interface web), ou `qbittorrent-nox` ;
+  - **Transmission** (2.80 ou plus récent) avec l'**accès à distance** activé :
+    le démon `transmission-daemon`, ou Préférences → Distant dans les versions
+    de bureau ;
+  - **Deluge** avec son **interface web** (`deluge-web`, port 8112),
+    connectée à son démon.
+- Le nom d'utilisateur et le mot de passe de l'interface web (Deluge : le mot
+  de passe seul, `deluge` tant que vous ne l'avez pas changé).
 
-Le réglage **Préférer la connexion locale** pilote la prise de
-démonstration : elle affiche en badge le canal réellement utilisé (local ou
-cloud), avec un point orange quand elle fonctionne en mode dégradé (local
-refusé, bascule cloud).
+Sur **Transmission**, l'adresse de Gladys doit être autorisée : ajoutez-la à
+`rpc-whitelist` dans `settings.json`, ou désactivez la liste blanche
+(`rpc-whitelist-enabled: false`) en gardant un mot de passe. Dans les images
+Docker (linuxserver.io…), les variables `USER`, `PASS` et `WHITELIST` s'en
+chargent.
 
-## Actions
+## Mise en place
 
-- **Tester le fournisseur météo** — effectue une requête en direct vers
-  Open-Meteo et affiche la température et l'humidité actuelles sous le
-  bouton.
-- **Identifier un appareil** — choisissez un de vos appareils dans la liste
-  et il se signale (la lampe de démonstration « clignote » dans les logs).
+1. Installez l'intégration depuis le catalogue de Gladys.
+2. Dans **Configuration**, pour votre premier client, choisissez le
+   **Logiciel**, saisissez son **Adresse** (par exemple `192.168.1.10:8080`),
+   le **Nom d'utilisateur** et le **Mot de passe**, et si vous voulez un
+   **Nom**. Sans port, l'intégration prend celui du logiciel par défaut : 8080
+   pour qBittorrent, 9091 pour Transmission, 8112 pour Deluge. Deux ou trois
+   clients ? Remplissez aussi les sections _Deuxième client_ et _Troisième
+   client_ : un autre logiciel, ou une autre instance du même.
+3. Enregistrez, puis cliquez sur **Tester la connexion** : le message sous le
+   bouton dit, pour chaque client, s'il répond, sa version et ses torrents.
+4. Ouvrez l'onglet **Découverte** : un appareil par client. Cliquez sur
+   **Ajouter**, choisissez une pièce, enregistrez.
 
-## Scènes
+L'adresse peut porter un chemin quand le client est derrière un proxy inverse
+(`https://nas.example.com/qbittorrent`), ou être copiée depuis le navigateur
+(`http://192.168.1.10:9091/transmission/web/` marche pour Transmission).
 
-L'intégration ajoute ses propres cartes à l'éditeur de scènes (Gladys 5.1
-ou plus récent), dans la catégorie **Intégrations** :
+Options :
 
-- **Mouvement détecté** (déclencheur) — lance la scène quand un détecteur
-  de démonstration voit bouger quelque chose. Choisissez éventuellement le
-  détecteur et ce qui a bougé (personne, animal) ; laissés vides, toute
-  détection correspond. Les actions suivantes peuvent lire ce qui a bougé
-  avec `{{triggerEvent.data.target}}`.
-- **Identifier un appareil** (action) — fait se signaler l'appareil choisi.
-  Elle indique si l'appareil a pu se signaler, pour que les actions
-  suivantes puissent en dépendre.
+- **Accepter les certificats auto-signés** : pour une adresse `https://` dont
+  le certificat n'est pas signé par une autorité (fréquent sur un NAS).
+- **Intervalle de rafraîchissement** : fréquence de lecture des clients, de 10
+  secondes à 2 minutes (30 secondes par défaut). C'est aussi le délai des
+  déclencheurs.
+- **Autoriser l'ajout de liens magnet** : permet aux scènes d'ajouter un
+  torrent (désactivé par défaut, voir l'action _Ajouter un lien magnet_).
+- **Langue des textes des appareils** : anglais, français, allemand ou
+  espagnol, pour les noms des fonctionnalités (donnés à l'ajout d'un appareil)
+  et la liste des téléchargements (français par défaut).
+
+## L'appareil de chaque client
+
+| Fonctionnalité                  | Ce que c'est                                                                     |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| Débit descendant                | Vitesse de tous les téléchargements, en ko/s                                     |
+| Débit montant                   | Vitesse de tous les envois (partage), en ko/s                                    |
+| Torrents en cours               | Torrents ni finis ni en pause : en téléchargement, en file, bloqués, en contrôle |
+| Torrents en pause               | Torrents pas finis et en pause                                                   |
+| Torrents terminés               | Torrents entièrement téléchargés, partagés ou non, en pause ou non               |
+| Téléchargements en cours        | Texte : les trois premiers téléchargements en cours avec leur pourcentage        |
+| Espace libre                    | Espace libre du dossier de téléchargement, en Go                                 |
+| Limites de vitesse alternatives | Interrupteur : les limites de vitesse alternatives du client (pas sur Deluge)    |
+| Client connecté                 | 1 tant que le client répond, 0 sinon                                             |
+
+Les trois compteurs font ensemble le nombre total de torrents. Un torrent mis
+en pause une fois son ratio de partage atteint compte comme terminé, pas comme
+en pause.
+
+Les _limites de vitesse alternatives_ sont les limites plus lentes réglées
+dans le client lui-même : dans qBittorrent, Options → Vitesse → _Limites de
+vitesse alternatives_ ; dans Transmission, le _mode tortue_ (Préférences →
+Vitesse → _Limites de vitesse alternatives_). Deluge n'a pas ce mode : son
+appareil n'a pas d'interrupteur.
+
+Dans la liste des téléchargements, ceux qui reçoivent des données viennent
+d'abord, les plus rapides en tête. Un pourcentage est arrondi par défaut :
+99 % jusqu'à la fin.
 
 ## Tableau de bord
 
-Ajoutez le widget **État de la démo** à un tableau de bord : il affiche en
-direct la température de la station météo et la puissance de la prise du
-bureau, la connexion utilisée par la prise (en orange si dégradée) et la
-position observée. Son bouton **Identifier la lampe** fait se signaler la
-lampe de démonstration.
+Le widget **Torrents** affiche les débits descendant et montant, le nombre de
+torrents en cours, les téléchargements en cours avec leur pourcentage et leur
+vitesse, et les nombres de torrents en pause et terminés. Il additionne tous
+les clients, ou montre celui choisi dans ses réglages. Trois boutons :
+
+- **Tout en pause** : met en pause tous les torrents ;
+- **Tout reprendre** : reprend tous les torrents ;
+- **Vitesse alternative** : active les limites de vitesse alternatives, ou les
+  désactive quand elles sont actives (une coche l'indique). Absent pour Deluge
+  seul.
+
+Le widget fonctionne dès que l'intégration est configurée, avant même l'ajout
+des appareils.
+
+## Scènes
+
+### Déclencheurs
+
+- **Téléchargement terminé** : un torrent a fini de se télécharger. Un torrent
+  ajouté avec ses fichiers déjà sur le disque (contrôlé, puis complet) ne
+  compte pas, ni un torrent fini contrôlé de nouveau. Filtres : le client, et
+  la **catégorie** (qBittorrent) ou l'**étiquette** (Transmission 4, Deluge
+  avec le greffon Label). Variables : le nom du torrent, le nom du client, la
+  catégorie et la taille en Go.
+- **Nouveau torrent ajouté** : un torrent a été ajouté au client, par
+  n'importe qui (vous, Sonarr, Radarr, une extension de navigateur…). Un lien
+  magnet est annoncé dès que son nom est connu. Mêmes filtres et variables.
+
+Les torrents présents au démarrage de l'intégration ne sont pas annoncés : un
+torrent ajouté ou terminé pendant que l'intégration (ou Gladys) était arrêtée
+n'est pas annoncé. Quand un client ne répond plus, l'intégration garde ses
+torrents en mémoire : ce qui s'est terminé entre-temps est annoncé à son
+retour.
+
+### Actions
+
+- **Mettre tous les torrents en pause** : sur un client, ou sur tous.
+- **Reprendre tous les torrents** : sur un client, ou sur tous.
+- **Limites de vitesse alternatives** : _Activées_ ou _Désactivées_, sur un
+  client ou sur tous ceux qui les ont (Deluge est ignoré). La sortie est le
+  nombre de clients qui ont accepté.
+- **Ajouter un lien magnet** : ajoute un torrent par son lien
+  `magnet:?xt=urn:btih:…`, sur le client choisi ou le premier de la
+  configuration. Seulement si **Autoriser l'ajout de liens magnet** est coché :
+  sinon, quiconque peut modifier une scène pourrait lancer un téléchargement.
+  Seuls les liens magnet sont acceptés, jamais une adresse `http` que le client
+  irait chercher. La sortie est l'empreinte (info hash).
+
+### Idées de scènes
+
+- **Un film démarre** : quand la télé ou le lecteur multimédia lit, lancez
+  _Limites de vitesse alternatives_ → _Activées_ ; à l'arrêt, _Désactivées_.
+- **Visioconférence** : depuis un événement du calendrier ou un bouton,
+  _Mettre tous les torrents en pause_, puis _Reprendre tous les torrents_ une
+  heure plus tard.
+- **Film prêt** : sur _Téléchargement terminé_ avec la catégorie `films`,
+  envoyez le message « {{triggerEvent.data.name}} est prêt à regarder ».
+- **Disque presque plein** : quand l'_Espace libre_ passe sous 20 Go, mettez
+  tout en pause et envoyez un message.
+- **Client en panne** : quand _Client connecté_ passe à 0 pendant 10 minutes,
+  envoyez un message.
+
+## Rafraîchissement et charge
+
+L'intégration lit chaque client avec son propre minuteur (toutes les 30
+secondes par défaut), pas par le planificateur de Gladys. Une lecture est
+légère : qBittorrent n'envoie que ce qui a changé depuis la lecture
+précédente, Transmission répond à quatre petits appels avec les seuls champs
+utiles, Deluge à un appel. Un client qui ne répond plus est relu 15 secondes
+plus tard. Une valeur qui ne change pas est quand même renvoyée à Gladys
+toutes les 6 heures.
+
+Les API sont locales, sans quota. qBittorrent bannit toutefois l'adresse de
+Gladys après 5 échecs de connexion (une heure par défaut) : après un mot de
+passe refusé, l'intégration attend 5 minutes, puis 15, puis une heure, puis 6
+heures avant de réessayer. Corriger le mot de passe dans la configuration, ou
+cliquer sur **Tester la connexion**, réessaie tout de suite.
 
 ## Dépannage
 
-L'intégration journalise tout ce qu'elle fait : consultez les logs de
-l'intégration depuis l'interface Gladys (ou `docker logs` sur l'hôte) avec
-`LOG_LEVEL=debug` pour le détail complet.
+- **« ne répond pas »** : vérifiez l'adresse et le port depuis la machine de
+  Gladys (`curl http://192.168.1.10:8080`), et que le client écoute sur le
+  réseau, pas seulement sur `localhost`.
+- **« nom d'utilisateur ou mot de passe refusé »** : vérifiez-les dans
+  l'interface web du client. Sur Deluge, c'est le mot de passe de l'interface
+  web, pas celui du démon.
+- **« qBittorrent a banni l'adresse de Gladys »** : trop d'échecs de
+  connexion. Attendez la fin du bannissement (Options → Interface web →
+  _Bannir le client après échecs consécutifs_), ou redémarrez qBittorrent,
+  puis corrigez le mot de passe.
+- **« pas dans la liste blanche RPC »** (Transmission) : ajoutez l'adresse de
+  Gladys à `rpc-whitelist`, voir _Ce qu'il faut_.
+- **« aucun client de ce type à cette adresse »** : le logiciel choisi ne
+  correspond pas à l'adresse, ou un proxy inverse le sert sous un chemin que
+  vous n'avez pas saisi.
+- **« pas connectée à son démon »** (Deluge) : ouvrez l'interface web,
+  Gestionnaire de connexions, et connectez-la à son démon ; l'intégration la
+  connecte ensuite elle-même au premier démon de la liste.
+- **qBittorrent derrière un proxy inverse refuse la connexion** : désactivez
+  _Activer la validation de l'en-tête Host_ ou ajoutez-y le nom (Options →
+  Interface web), ou autorisez l'adresse de Gladys dans _Ignorer
+  l'authentification pour les clients des sous-réseaux autorisés_ et laissez
+  le nom d'utilisateur et le mot de passe vides.
+- **L'onglet Découverte n'affiche rien** : aucun client n'est configuré, ou
+  son adresse n'a pas été comprise (c'est dit dans l'écran Configuration).
+- **Plus de détails** : mettez la variable d'environnement `LOG_LEVEL=debug`
+  sur le conteneur pour voir chaque lecture dans les logs de l'intégration.
+  Mots de passe et cookies de session n'y sont jamais écrits.
+
+## Limites
+
+- Trois clients au plus. Un appareil par client, pas par torrent.
+- Aucune suppression de torrent ni de fichier, par choix.
+- Deluge : pas de limites de vitesse alternatives (Deluge n'en a pas) ; le
+  greffon Label est nécessaire pour le filtre de catégorie.
+- Transmission : la catégorie est la première étiquette (Transmission 4.0 et
+  plus récent).
+- Les débits sont ceux du client entier, pas d'un torrent.
+- Les déclencheurs dépendent de l'intervalle de rafraîchissement : un torrent
+  ajouté puis retiré entre deux lectures n'est pas vu.
+- Les noms des fonctionnalités sont fixés à l'ajout de l'appareil : changer la
+  langue ensuite ne renomme rien dans Gladys.
+- Sans lien avec les projets qBittorrent, Transmission ou Deluge.

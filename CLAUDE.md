@@ -16,8 +16,9 @@ its only runtime dependency. It started from the official JavaScript template.
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/hub.test.js              # one file
+node --test --test-name-pattern "magnet"  # tests whose name matches
+npm run test:real                         # the real programs (see below), skipped without env
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -31,16 +32,25 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+index.js                          SDK wiring only (src/app.js), graceful shutdown
+src/app.js                        registers every handler on the SDK (or its fake Gladys)
+src/hub.js                        one record per client: own timer, states, scene events, commands
+src/devices.js                    one device per client: features, names (4 languages), states
+src/model.js                      what a reading means: counters, downloads text, scene events
+src/clients/qbittorrent.js        qBittorrent Web API v2 (incremental sync/maindata)
+src/clients/transmission.js       Transmission RPC (CSRF session id)
+src/clients/deluge.js             Deluge web JSON-RPC (connects the web UI to its daemon)
+src/clients/common.js, http.js    error kinds, cookies, login back-off, magnet check; node:http(s)
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/widgets.js                    the `torrents` dashboard widget (manifest `widgets`)
+src/texts.js                      messages of the code, in en/fr/de/es
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+scripts/probe.mjs                 read-only probe of real clients (counts only)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (same sections)
+test/                             node --test, against the SDK's fake Gladys and fake clients
+test/fixtures/                    answers recorded from the real programs (anonymized)
+test/real.test.js                 `npm run test:real`: the real programs, skipped without env
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +80,10 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** is in four languages (English, French, German with
+  "du", Spanish with "usted"): action messages, manifest texts, feature names,
+  widget texts, and `docs/en.md`, `fr.md`, `de.md`, `es.md`, kept in sync
+  (same sections). `test/i18n.test.js` checks it.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +245,55 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Cette intégration : qBittorrent / Transmission / Deluge
+
+Jusqu'à trois clients (slots 1 à 3), un appareil par client, identité
+`<logiciel>:<slot>` (`qbittorrent:1`) : changer d'adresse garde l'appareil, changer de
+logiciel en crée un autre (Deluge n'a pas d'interrupteur de vitesse alternative). Lecture
+par le minuteur du hub (10 s à 2 min), `should_poll: false`, `onPoll` en repli. Aucune
+écriture sous `/data`. **Aucun chemin de code ne supprime un torrent** :
+`test/hub.test.js` vérifie qu'aucune requête de suppression ne part.
+
+**Lancer les vrais logiciels dans une session** (`npm run test:real`) :
+
+- `apt-get install qbittorrent-nox transmission-daemon deluged deluge-web`.
+- qBittorrent 4.6 : `qbittorrent-nox --profile=<dir> --webui-port=8080` après avoir écrit
+  `[LegalNotice]\nAccepted=true` dans `<dir>/qBittorrent/config/qBittorrent.conf` (l'option
+  `--confirm-legal-notice` n'existe pas en 4.6) ; mot de passe temporaire affiché au
+  démarrage. qBittorrent 5.x : binaire statique
+  `https://github.com/userdocs/qbittorrent-nox-static/releases/latest/download/x86_64-qbittorrent-nox`.
+- Transmission : `transmission-daemon -f -g <dir> -w <dl> -p 9091 -t -u <user> -v <pass>`.
+- Deluge : le paquet Ubuntu plante sous Python 3.13 (zope.interface). Créer un venv
+  **Python 3.12** `--system-site-packages` (pour `python3-libtorrent`), y installer
+  `deluge 'setuptools<81'`, puis `python /usr/bin/deluged -d -c <dir>` et
+  `python /usr/bin/deluge-web -d -c <dir> -p 8112` (mot de passe `deluge`).
+- Pour un vrai téléchargement : créer un `.torrent` (libtorrent Python), le faire seeder
+  par Transmission et l'ajouter à qBittorrent avec `torrents/addPeers` vers
+  `127.0.0.1:51413` (pas de tracker joignable).
+
+**Pièges relevés sur les vrais logiciels**
+
+- qBittorrent bannit l'adresse après **5 échecs de connexion** (une heure) : un mot de
+  passe refusé est réessayé après 5, 15, 60 min puis toutes les 6 h (`LoginGuard`),
+  jamais à chaque lecture. Mauvais mot de passe : `200 "Fails."` en 4.x, `401` en 5.x ;
+  adresse bannie : `403`.
+- qBittorrent 5.1+ : cookie `QBT_SID_<port>` (plus `SID`), connexion en `204`,
+  `torrents/add` répond du JSON (`success_count`) puis `409` sur un doublon ;
+  `stop`/`start` et états `stopped*` dès la Web API 2.11.0 (5.0), `has_metadata` présent.
+- Ne pas envoyer `Referer` ni `Origin` à qBittorrent : derrière un proxy inverse, un hôte
+  différent de celui qu'il voit donne un 401 (qbittorrent-api les a retirés, issue #63).
+- qBittorrent : un lien magnet sans métadonnées est `metaDL` avec `amount_left: 0` et
+  `total_size: -1` : pas « terminé ». `free_space_on_disk` vaut -1 avant le premier calcul.
+- qBittorrent : les clés de `sync/maindata` d'un torrent hybride v1+v2 sont l'empreinte
+  v2 tronquée à 40 caractères, pas l'`infohash_v1` (que Transmission affiche).
+- Transmission : `labels` (catégorie) depuis la 4.0 ; `free-space` depuis la RPC 15 ;
+  le nom d'un magnet ajouté garde les `+` du `dn`. 403 = adresse hors `rpc-whitelist`.
+- Deluge : `progress` en pourcentage (0-100), `label` ignoré sans le greffon Label,
+  `total_wanted: 0` pour un magnet sans métadonnées ; `core.pause_torrent` accepte une
+  liste en 1.3 comme en 2.x ; l'interface web peut ne pas être connectée au démon
+  (`web.connected` faux) : la connecter au premier hôte de `web.get_hosts`.
+- « Téléchargement terminé » : un torrent ajouté avec ses données déjà sur le disque passe
+  par un contrôle puis 100 % — ne pas l'annoncer (vu sur Transmission). D'où la règle « vu
+  en téléchargement » (états `downloading`/`stalledDL`/`metaDL`, statut 4, `Downloading`),
+  plus le cas du petit torrent fini entre deux lectures (nouveau, complet, octets reçus).
