@@ -1,0 +1,74 @@
+{
+  "result": {
+    "connected": true,
+    "torrents": {
+      "026a771e6576fb1e05e102ef0f1615e2732a0667": {
+        "state": "Downloading",
+        "download_payload_rate": 0,
+        "is_finished": false,
+        "message": "OK",
+        "paused": false,
+        "progress": 0.054600004106760025,
+        "time_added": 1792005599,
+        "total_done": 16384,
+        "total_wanted": 30000000,
+        "upload_payload_rate": 0,
+        "eta": 0,
+        "name": "Ubuntu-Test-Image.iso"
+      },
+      "f0f72a7a266aba79d6c5e031c93813ce733c6996": {
+        "state": "Downloading",
+        "download_payload_rate": 0,
+        "is_finished": false,
+        "message": "OK",
+        "paused": false,
+        "progress": 0.0,
+        "time_added": 1792005599,
+        "total_done": 0,
+        "total_wanted": 8000000,
+        "upload_payload_rate": 0,
+        "eta": 0,
+        "name": "Debian-Netinst.iso"
+      }
+    },
+    "filters": {
+      "state": [
+        ["All", 2],
+        ["Active", 0],
+        ["Allocating", 0],
+        ["Checking", 0],
+        ["Downloading", 2],
+        ["Seeding", 0],
+        ["Paused", 0],
+        ["Error", 0],
+        ["Queued", 0],
+        ["Moving", 0]
+      ],
+      "tracker_host": [
+        ["All", 2],
+        ["Error", 2],
+        ["tracker.invalid", 2]
+      ],
+      "owner": [
+        ["", 0],
+        ["localclient", 2]
+      ]
+    },
+    "stats": {
+      "max_download": 1500.0,
+      "max_upload": -1.0,
+      "max_num_connections": 200,
+      "num_connections": 2,
+      "upload_rate": 0.0,
+      "download_rate": 48.0,
+      "download_protocol_rate": 162.0,
+      "upload_protocol_rate": 186.0,
+      "dht_nodes": 0,
+      "has_incoming_connections": 1,
+      "free_space": 31767236608,
+      "external_ip": "192.0.2.2"
+    }
+  },
+  "error": null,
+  "id": 9
+}

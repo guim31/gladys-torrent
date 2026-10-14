@@ -1,77 +1,140 @@
+// -----------------------------------------------------------------------------
+// The `torrents` widget: content within the core's vocabulary and budget
+// (validateWidgetContent of the SDK), its buttons and their toasts.
+// -----------------------------------------------------------------------------
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateWidgetContent } from '@gladysassistant/integration-sdk';
-import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
-import { buildDiscoveredDevices } from '../src/devices/index.js';
-import { simulateLanSession } from '../src/devices/plug.js';
-import { DEMO_STATUS_WIDGET, WIDGETS, refreshWidgets } from '../src/widgets.js';
-import { normalizeConfig } from '../src/config.js';
+import { ACTIONS } from '../src/widgets.js';
+import { QB_CONFIG, THREE_CLIENTS, createWorld, ids } from './helpers/world.js';
 
-const gladys = createFakeGladys();
-const config = normalizeConfig();
-const demoStatus = WIDGETS[DEMO_STATUS_WIDGET];
+async function world(t, options) {
+  const w = await createWorld(options);
+  t.after(() => w.app.stop());
+  return w;
+}
 
-// What the SDK passes to onWidgetGet, plus the config index.js adds.
-const getContent = (cfg = config) =>
-  demoStatus.get(gladys, { settings: {}, language: 'en', units: 'metric', config: cfg });
+async function content(w, settings = {}, language = 'en') {
+  const ack = await w.fake.widgetGet('torrents', { settings, language });
+  assert.equal(ack.success, true, ack.error);
+  assert.deepEqual(validateWidgetContent(ack.data.content), [], 'rendered as sent');
+  return ack.data.content;
+}
 
-test('the demo_status content is rendered exactly as sent', async () => {
-  // [] = nothing the core would drop, truncate or trim to the content budget.
-  assert.deepEqual(validateWidgetContent(await getContent()), []);
-});
+const byType = (c, type) => c.components.filter((component) => component.type === type);
 
-test('the degraded plug connection content is valid too', async () => {
-  simulateLanSession(false);
-  try {
-    const content = await getContent();
-    assert.deepEqual(validateWidgetContent(content), []);
-    const status = content.components.find((component) => component.type === 'status');
-    assert.ok(
-      status.items.some((item) => item.color === 'warning'),
-      'degraded shows a warning',
-    );
-  } finally {
-    simulateLanSession(true);
+test('speeds, downloads in progress and three buttons, within the budget', async (t) => {
+  const w = await world(t, { config: THREE_CLIENTS });
+  w.qb.update('f0f72a7a266aba79d6c5e031c93813ce733c6996', {
+    progress: 0.42,
+    state: 'downloading',
+    dlspeed: 1_500_000,
+  });
+  w.qb.server.dl_info_speed = 1_500_000;
+  await w.hub.pollAll();
+  for (const language of ['en', 'fr', 'de', 'es']) {
+    const c = await content(w, {}, language);
+    assert.equal(c.components.length <= 8, true);
+    assert.equal(byType(c, 'value').length, 3);
+    assert.equal(byType(c, 'status').length, 1);
+    assert.equal(byType(c, 'button').length, 3);
   }
+  const c = await content(w, {}, 'fr');
+  assert.deepEqual(byType(c, 'value')[0], {
+    type: 'value',
+    value: 1.5,
+    unit: 'Mo/s',
+    label: 'Réception',
+    icon: 'arrow-down',
+  });
+  const [first] = byType(c, 'status')[0].items;
+  assert.deepEqual(first, {
+    label: 'Debian-Netinst.iso',
+    icon: 'download',
+    value: '42\u202f% · 1,5 Mo/s',
+    color: 'primary',
+  });
 });
 
-test('the live tiles reference features the integration publishes', async () => {
-  const featureIds = new Set(
-    buildDiscoveredDevices(gladys, config).flatMap((device) =>
-      device.features.map((feature) => feature.external_id),
-    ),
+test('one client chosen in the settings; Deluge alone has no speed button', async (t) => {
+  const w = await world(t, { config: THREE_CLIENTS });
+  const deluge = await content(w, { device: ids(w.gladys, 'deluge', 3).device });
+  assert.deepEqual(
+    byType(deluge, 'button').map((b) => b.action.key),
+    [ACTIONS.PAUSE_ALL, ACTIONS.RESUME_ALL],
   );
-  const liveTiles = (await getContent()).components.filter((c) => c.device_feature);
-  assert.ok(liveTiles.length > 0, 'the template demonstrates a device-bound tile');
-  for (const tile of liveTiles) {
-    assert.ok(featureIds.has(tile.device_feature), `unknown feature ${tile.device_feature}`);
-  }
+  const gone = await content(w, { device: 'ext:test-integration:qbittorrent:3' });
+  assert.match(gone.components[0].text, /no longer in the configuration/);
 });
 
-test('every button action of the content is handled and answers a short toast', async () => {
-  const buttons = (await getContent()).components.filter((c) => c.type === 'button' && c.action);
-  assert.ok(buttons.length > 0, 'the template demonstrates a widget action');
-  for (const { action } of buttons) {
-    const message = await demoStatus.action(gladys, {
-      actionKey: action.key,
-      params: action.params ?? {},
-      settings: {},
-      config,
-    });
-    assert.ok(message.en, 'the toast carries at least the mandatory `en` text');
-    assert.ok(message.en.length <= 200, 'toasts are capped at 200 characters');
-  }
-});
-
-test('an unknown widget action fails, so the user sees the error', async () => {
-  await assert.rejects(
-    demoStatus.action(gladys, { actionKey: 'unknown', params: {}, settings: {}, config }),
-    /Unknown widget action/,
+test('the speed button shows the active mode by its icon, never by its style', async (t) => {
+  const w = await world(t);
+  let button = byType(await content(w), 'button').find((b) => b.action.key === ACTIONS.ALT_SPEED);
+  assert.deepEqual(button.action.params, { enabled: true });
+  assert.equal(button.style, 'secondary');
+  const ack = await w.fake.widgetAction(
+    'torrents',
+    ACTIONS.ALT_SPEED,
+    { enabled: true },
+    { settings: {} },
   );
+  assert.equal(ack.success, true);
+  assert.equal(ack.data.message.fr, 'Limites de vitesse alternatives activées sur 1 client(s).');
+  button = byType(await content(w), 'button').find((b) => b.action.key === ACTIONS.ALT_SPEED);
+  assert.equal(button.icon, 'check-circle');
+  assert.deepEqual(button.action.params, { enabled: false });
 });
 
-test('refreshWidgets nudges every widget', () => {
-  const fresh = createFakeGladys();
-  refreshWidgets(fresh);
-  assert.deepEqual(fresh.fake.widgetRefreshes, Object.keys(WIDGETS));
+test('pause and resume from the widget', async (t) => {
+  const w = await world(t);
+  let ack = await w.fake.widgetAction('torrents', ACTIONS.PAUSE_ALL, {}, { settings: {} });
+  assert.equal(ack.data.message.en, 'Torrents paused on 1 client(s).');
+  const paused = byType(await content(w), 'status')[0].items.find(
+    (i) => i.label === 'Paused torrents',
+  );
+  assert.equal(paused.value, 3);
+  ack = await w.fake.widgetAction('torrents', ACTIONS.RESUME_ALL, {}, { settings: {} });
+  assert.equal(ack.data.message.de, 'Torrents auf 1 Client(s) fortgesetzt.');
+  ack = await w.fake.widgetAction('torrents', 'nonsense', {}, { settings: {} });
+  assert.equal(ack.success, false);
+});
+
+test('a client that does not answer, or no client at all', async (t) => {
+  const w = await world(t, { config: THREE_CLIENTS });
+  w.qb.online = false;
+  await w.hub.pollAll();
+  const c = await content(w);
+  assert.deepEqual(byType(c, 'status')[0].items[0], {
+    label: 'NAS',
+    icon: 'alert-triangle',
+    value: 'Unreachable',
+    color: 'danger',
+  });
+  w.tr.online = false;
+  w.de.online = false;
+  await w.hub.pollAll();
+  const none = await content(w);
+  assert.match(byType(none, 'text')[0].text, /No torrent client answers/);
+
+  const empty = await world(t, { config: { language: 'en' } });
+  assert.match((await content(empty)).components[0].text, /Enter the address/);
+});
+
+test('nothing downloading: said in one row', async (t) => {
+  const w = await world(t, { config: { ...QB_CONFIG } });
+  await w.fake.sceneAction('pause_all', {});
+  const items = byType(await content(w), 'status')[0].items;
+  assert.equal(items[0].label, 'No download in progress');
+});
+
+test('a new download refreshes the widget, a speed change does not', async (t) => {
+  const w = await world(t);
+  const before = w.fake.widgetRefreshes.length;
+  w.qb.server.dl_info_speed = 12345;
+  await w.hub.pollAll();
+  assert.equal(w.fake.widgetRefreshes.length, before);
+  w.qb.update('f0f72a7a266aba79d6c5e031c93813ce733c6996', { progress: 1, state: 'uploading' });
+  await w.hub.pollAll();
+  assert.equal(w.fake.widgetRefreshes.length, before + 1);
 });

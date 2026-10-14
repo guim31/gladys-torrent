@@ -1,0 +1,58 @@
+{
+  "rid": 3,
+  "server_state": {
+    "alltime_dl": 3870023,
+    "alltime_ul": 122675,
+    "average_time_queue": 37,
+    "dl_info_data": 3755089,
+    "dl_info_speed": 1563128,
+    "global_ratio": "0.03",
+    "total_peer_connections": 4,
+    "total_wasted_session": 16297
+  },
+  "torrents": {
+    "026a771e6576fb1e05e102ef0f1615e2732a0667": {
+      "amount_left": 29754240,
+      "completed": 245760,
+      "dlspeed": 42583,
+      "downloaded": 262057,
+      "downloaded_session": 262057,
+      "eta": 2595,
+      "num_complete": 2,
+      "num_incomplete": 0,
+      "num_leechs": 0,
+      "progress": 0.008192,
+      "seen_complete": 1792005558,
+      "state": "downloading",
+      "time_active": 9
+    },
+    "f0f72a7a266aba79d6c5e031c93813ce733c6996": {
+      "amount_left": 6422528,
+      "availability": 1.1929999589920044,
+      "completed": 1577472,
+      "dlspeed": 144836,
+      "downloaded": 770048,
+      "downloaded_session": 1593234,
+      "eta": 269,
+      "last_activity": 1792005559,
+      "progress": 0.197184,
+      "seen_complete": 1792005558,
+      "state": "downloading",
+      "time_active": 9
+    },
+    "ffc3d6947d79e038b9b7befe9d750bb620517e8b": {
+      "amount_left": 10115840,
+      "availability": 1.1519999504089355,
+      "completed": 1884160,
+      "dlspeed": 172756,
+      "downloaded": 917504,
+      "downloaded_session": 1899798,
+      "eta": 357,
+      "last_activity": 1792005559,
+      "progress": 0.15701333333333334,
+      "seen_complete": 1792005558,
+      "state": "downloading",
+      "time_active": 9
+    }
+  }
+}

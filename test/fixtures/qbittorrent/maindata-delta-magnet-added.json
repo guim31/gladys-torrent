@@ -1,0 +1,79 @@
+{
+  "rid": 7,
+  "server_state": {
+    "alltime_dl": 39385456,
+    "alltime_ul": 1128686
+  },
+  "torrents": {
+    "026a771e6576fb1e05e102ef0f1615e2732a0667": {
+      "downloaded_session": 0,
+      "eta": 20,
+      "state": "stalledDL",
+      "time_active": 35
+    },
+    "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c": {
+      "added_on": 1792005587,
+      "amount_left": 0,
+      "auto_tmm": false,
+      "availability": 0,
+      "category": "",
+      "completed": 0,
+      "completion_on": 0,
+      "content_path": "",
+      "dl_limit": 0,
+      "dlspeed": 0,
+      "download_path": "",
+      "downloaded": 0,
+      "downloaded_session": 0,
+      "eta": 8640000,
+      "f_l_piece_prio": false,
+      "force_start": false,
+      "inactive_seeding_time_limit": -2,
+      "infohash_v1": "dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c",
+      "infohash_v2": "",
+      "last_activity": 1792005587,
+      "magnet_uri": "magnet:?xt=urn:btih:dd8255ecdc7ca55fb0bbf81323d87062db1f6d1c&dn=Big%20Buck%20Bunny",
+      "max_inactive_seeding_time": -1,
+      "max_ratio": -1,
+      "max_seeding_time": -1,
+      "name": "Big Buck Bunny",
+      "num_complete": 0,
+      "num_incomplete": 0,
+      "num_leechs": 0,
+      "num_seeds": 0,
+      "priority": 2,
+      "progress": 0,
+      "ratio": 0,
+      "ratio_limit": -2,
+      "save_path": "/downloads",
+      "seeding_time": 0,
+      "seeding_time_limit": -2,
+      "seen_complete": 0,
+      "seq_dl": false,
+      "size": 0,
+      "state": "metaDL",
+      "super_seeding": false,
+      "tags": "",
+      "time_active": 1,
+      "total_size": -1,
+      "tracker": "",
+      "trackers_count": 0,
+      "up_limit": 0,
+      "uploaded": 0,
+      "uploaded_session": 0,
+      "upspeed": 0
+    },
+    "f0f72a7a266aba79d6c5e031c93813ce733c6996": {
+      "downloaded_session": 0,
+      "seeding_time": 18,
+      "state": "stalledUP",
+      "time_active": 35
+    },
+    "ffc3d6947d79e038b9b7befe9d750bb620517e8b": {
+      "downloaded_session": 0,
+      "seeding_time": 14,
+      "state": "stalledUP",
+      "time_active": 35
+    }
+  }
+}
