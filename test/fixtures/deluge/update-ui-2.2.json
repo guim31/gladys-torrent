@@ -1,0 +1,73 @@
+{
+  "id": 1,
+  "result": {
+    "connected": true,
+    "torrents": {
+      "2f3788fbe57dcbcb675599c06b6573be93aa78ed": {
+        "state": "Seeding",
+        "all_time_download": 0,
+        "download_payload_rate": 0,
+        "progress": 100,
+        "time_added": 1792760931,
+        "total_wanted": 300000,
+        "name": "seed-file.bin"
+      },
+      "871fde1c812ef38d2ed11f591ea022df916d0c46": {
+        "state": "Paused",
+        "all_time_download": 0,
+        "download_payload_rate": 0,
+        "progress": 0,
+        "time_added": 1792760931,
+        "total_wanted": 300000,
+        "name": "pause-file.bin"
+      },
+      "758ec748c170184da02db7962d37c0a68875ebb3": {
+        "state": "Error",
+        "all_time_download": 0,
+        "download_payload_rate": 0,
+        "progress": 100,
+        "time_added": 1792760931,
+        "total_wanted": 300000,
+        "name": "error-file.bin"
+      }
+    },
+    "filters": {
+      "state": [
+        ["All", 3],
+        ["Active", 0],
+        ["Allocating", 0],
+        ["Checking", 0],
+        ["Downloading", 0],
+        ["Seeding", 1],
+        ["Paused", 1],
+        ["Error", 1],
+        ["Queued", 0],
+        ["Moving", 0]
+      ],
+      "tracker_host": [
+        ["", 3],
+        ["All", 3],
+        ["Error", 0]
+      ],
+      "owner": [
+        ["", 0],
+        ["localclient", 3]
+      ]
+    },
+    "stats": {
+      "max_download": -1,
+      "max_upload": -1,
+      "max_num_connections": 200,
+      "num_connections": 0,
+      "upload_rate": 0,
+      "download_rate": 0,
+      "download_protocol_rate": 0,
+      "upload_protocol_rate": 0,
+      "dht_nodes": 72,
+      "has_incoming_connections": 0,
+      "free_space": 48844709888,
+      "external_ip": "198.51.100.7"
+    }
+  },
+  "error": null
+}

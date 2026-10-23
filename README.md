@@ -1,4 +1,4 @@
-# qBittorrent / Transmission for Gladys Assistant
+# qBittorrent / Transmission / Deluge for Gladys Assistant
 
 An external integration for [Gladys Assistant](https://gladysassistant.com) that
 follows and controls the self-hosted torrent clients **qBittorrent** (Web API
@@ -9,6 +9,7 @@ several instances of the same software.
 > **Tested on the real programs, not yet in a real home: feedback welcome.**
 > The integration was run against qbittorrent-nox 4.6.3 and 5.2.4,
 > transmission-daemon 4.0.5 and Deluge 2.1 (downloads between them included),
+> then Deluge 2.2,
 > and its tests replay answers recorded from them. It has not yet run in a real
 > Gladys installation, next to a NAS, a reverse proxy or a Docker stack. Please
 > report what works and what does not in the
@@ -112,7 +113,9 @@ links it from the Configuration screen.
 Checked in a development session (14/10/2026), with qbittorrent-nox 4.6.3
 (Ubuntu package) and 5.2.4 (static build), transmission-daemon 4.0.5 and
 Deluge 2.1.2 running locally, Transmission seeding test torrents that
-qBittorrent and Deluge downloaded:
+qBittorrent and Deluge downloaded. Deluge 2.2.0 checked again on 23/10/2026
+in the `lscr.io/linuxserver/deluge` image (a seeding torrent, a paused one and a
+failed one; pause and resume all):
 
 - reading, counters, current downloads, free space, alternative speed, wrong
   password, wrong address, wrong software, on the three programs;
@@ -129,9 +132,11 @@ The answers are recorded in `test/fixtures/` (paths anonymized), and
 `npm run test:real` drives the real programs again (see
 [`CLAUDE.md`](CLAUDE.md)). Not checked: a real Gladys instance, HTTPS with a
 self-signed certificate, reverse proxies, Transmission 3.x and older, Deluge
-1.3, libraries of thousands of torrents, the Docker image under the Gladys
-sandbox. `scripts/probe.mjs` reads real clients without changing anything and
-prints counts only, for anyone who wants to check theirs.
+1.3, the Deluge daemon reached directly (port 58846, rencode protocol: the
+integration only speaks to the web interface), libraries of thousands of
+torrents, the Docker image under the Gladys sandbox. `scripts/probe.mjs` reads
+real clients without changing anything and prints counts only, for anyone who
+wants to check theirs.
 
 ## Limitations
 
@@ -176,6 +181,9 @@ are released by the Release workflow (Actions → Release), never by hand.
   [`transmission`](https://github.com/home-assistant/core/tree/dev/homeassistant/components/transmission)
   and [`deluge`](https://github.com/home-assistant/core/tree/dev/homeassistant/components/deluge)
   integrations (Apache-2.0): the choice of sensors and switches.
+- Cover: the official logos of the three programs, the Deluge one from
+  [`deluge/ui/data/pixmaps/deluge.svg`](https://github.com/deluge-torrent/deluge/blob/develop/deluge/ui/data/pixmaps/deluge.svg)
+  in the Deluge repository (GPL-3.0).
 - The architecture, the conformity and language tests follow
   [gladys-pihole](https://github.com/guim31/gladys-pihole) and
   [gladys-wled](https://github.com/guim31/gladys-wled).

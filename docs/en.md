@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Follow and control the torrent clients of your home server from Gladys, over
 your local network: **qBittorrent**, **Transmission** and **Deluge**. See the
@@ -27,7 +27,8 @@ is off unless you allow it.
   - **Transmission** (2.80 or later) with **remote access** on: the daemon
     `transmission-daemon`, or Preferences → Remote in the desktop versions;
   - **Deluge** with its **web interface** (`deluge-web`, port 8112),
-    connected to its daemon.
+    connected to its daemon (the integration does not use the daemon port
+    58846 directly).
 - The user name and password of the web interface (Deluge: the password only,
   `deluge` until you change it).
 

@@ -1,12 +1,13 @@
 // -----------------------------------------------------------------------------
 // The three clients against their fakes (test/helpers/fakeClients.js) and
 // against the answers recorded on qbittorrent-nox 4.6.3, transmission-daemon
-// 4.0.5 and Deluge 2.1 (test/fixtures/).
+// 4.0.5 and Deluge 2.1 and 2.2 (test/fixtures/).
 // -----------------------------------------------------------------------------
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { DelugeClient, jsonUrl } from '../src/clients/deluge.js';
+import { DelugeClient, jsonUrl, toTorrent } from '../src/clients/deluge.js';
+import { countTorrents } from '../src/model.js';
 import { QbittorrentClient } from '../src/clients/qbittorrent.js';
 import { TransmissionClient, rpcUrl } from '../src/clients/transmission.js';
 import { ERROR_KINDS, LOGIN_BACKOFF_MS, magnetHash, magnetName } from '../src/clients/common.js';
@@ -317,6 +318,20 @@ test('Deluge: the recorded answer, percentages and magnet without metadata', asy
   assert.equal(byName['Big Buck Bunny'].hasMetadata, false);
   assert.equal(client.supportsAltSpeed, false);
   await assert.rejects(client.setAltSpeed(true), { kind: ERROR_KINDS.UNSUPPORTED });
+});
+
+test('Deluge 2.2: a seeding, a paused and a failed torrent (recorded answer)', () => {
+  // lscr.io/linuxserver/deluge 2.2.0: the failed torrent's file replaced by a
+  // folder, then rechecked ("Is a directory"); the paused one lost its data.
+  const { result } = fixture('deluge/update-ui-2.2.json');
+  const torrents = Object.entries(result.torrents).map(([hash, raw]) => toTorrent(hash, raw));
+  const byName = Object.fromEntries(torrents.map((t) => [t.name, t]));
+  assert.equal(byName['seed-file.bin'].complete, true);
+  assert.equal(byName['pause-file.bin'].paused, true);
+  assert.equal(byName['pause-file.bin'].complete, false);
+  assert.equal(byName['error-file.bin'].error, true);
+  assert.equal(byName['error-file.bin'].complete, true); // counted completed, like the others
+  assert.deepEqual(countTorrents(torrents), { downloading: 0, paused: 1, completed: 2, total: 3 });
 });
 
 test('Deluge: connects the web interface to its daemon when needed', async () => {

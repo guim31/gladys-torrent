@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Siga y controle desde Gladys los clientes torrent de su servidor doméstico, en
 su red local: **qBittorrent**, **Transmission** y **Deluge**. Vea las
@@ -29,7 +29,8 @@ enlaces magnet está desactivado mientras usted no lo permita.
     demonio `transmission-daemon`, o Preferencias → Remoto en las versiones de
     escritorio;
   - **Deluge** con su **interfaz web** (`deluge-web`, puerto 8112),
-    conectada a su demonio.
+    conectada a su demonio (la integración no usa directamente el puerto
+    58846 del demonio).
 - El nombre de usuario y la contraseña de la interfaz web (Deluge: solo la
   contraseña, `deluge` mientras no la cambie).
 

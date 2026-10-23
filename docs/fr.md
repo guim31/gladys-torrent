@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Suivez et pilotez depuis Gladys les clients torrent de votre serveur maison,
 sur votre réseau local : **qBittorrent**, **Transmission** et **Deluge**. Voyez
@@ -30,7 +30,8 @@ l'ajout de liens magnet est désactivé tant que vous ne l'autorisez pas.
     le démon `transmission-daemon`, ou Préférences → Distant dans les versions
     de bureau ;
   - **Deluge** avec son **interface web** (`deluge-web`, port 8112),
-    connectée à son démon.
+    connectée à son démon (l'intégration n'utilise pas directement le port
+    58846 du démon).
 - Le nom d'utilisateur et le mot de passe de l'interface web (Deluge : le mot
   de passe seul, `deluge` tant que vous ne l'avez pas changé).
 

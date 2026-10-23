@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Verfolge und steuere die Torrent-Clients deines Heimservers von Gladys aus, in
 deinem lokalen Netzwerk: **qBittorrent**, **Transmission** und **Deluge**.
@@ -29,7 +29,8 @@ umkehrbar; das Hinzufügen von Magnet-Links ist aus, bis du es erlaubst.
     der Daemon `transmission-daemon`, oder Einstellungen → Fernsteuerung in
     den Desktop-Versionen;
   - **Deluge** mit seiner **Weboberfläche** (`deluge-web`, Port 8112), mit
-    seinem Daemon verbunden.
+    seinem Daemon verbunden (die Integration nutzt den Daemon-Port 58846
+    nicht direkt).
 - Benutzername und Passwort der Weboberfläche (Deluge: nur das Passwort,
   `deluge`, solange du es nicht geändert hast).
 
