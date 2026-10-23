@@ -8,7 +8,7 @@ un téléchargement est terminé.
 
 > **Testée sur les vrais logiciels, pas encore dans une vraie maison : vos
 > retours sont les bienvenus.** Cette intégration a été testée contre
-> qBittorrent 4.6.3 et 5.2.4, Transmission 4.0.5 et Deluge 2.1 et 2.2 lancés à côté
+> qBittorrent 4.6.3 et 5.2.4, Transmission 4.0.5 et Deluge 2.1 lancés à côté
 > d'elle, avec des téléchargements entre eux, mais pas encore dans une vraie
 > installation Gladys avec votre NAS, votre proxy inverse ou votre Docker. Si
 > quelque chose ne marche pas comme décrit, dites-le sur le

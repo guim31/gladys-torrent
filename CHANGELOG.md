@@ -10,11 +10,11 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
-### Added
+### Changed
 
-- Deluge 2.2 checked on the real program (seeding, paused and failed torrents,
-  pause and resume all), and the documentation now says that the integration
-  speaks to the Deluge web interface only, not to its daemon port (58846).
+- Documentation: Deluge 2.2 is supported (tested on 2.2.0), and the integration
+  reaches Deluge through its web interface only, not through the daemon port
+  (58846).
 
 ## [1.0.1] - 2026-10-14
 

@@ -8,7 +8,8 @@ several instances of the same software.
 
 > **Tested on the real programs, not yet in a real home: feedback welcome.**
 > The integration was run against qbittorrent-nox 4.6.3 and 5.2.4,
-> transmission-daemon 4.0.5 and Deluge 2.1 and 2.2 (downloads between them included),
+> transmission-daemon 4.0.5 and Deluge 2.1 (downloads between them included),
+> then Deluge 2.2,
 > and its tests replay answers recorded from them. It has not yet run in a real
 > Gladys installation, next to a NAS, a reverse proxy or a Docker stack. Please
 > report what works and what does not in the
@@ -113,8 +114,8 @@ Checked in a development session (14/10/2026), with qbittorrent-nox 4.6.3
 (Ubuntu package) and 5.2.4 (static build), transmission-daemon 4.0.5 and
 Deluge 2.1.2 running locally, Transmission seeding test torrents that
 qBittorrent and Deluge downloaded. Deluge 2.2.0 checked again on 23/10/2026
-in the `lscr.io/linuxserver/deluge` image (a seeding, a paused and a failed
-torrent; pause and resume all):
+in the `lscr.io/linuxserver/deluge` image (a seeding torrent, a paused one and a
+failed one; pause and resume all):
 
 - reading, counters, current downloads, free space, alternative speed, wrong
   password, wrong address, wrong software, on the three programs;
@@ -132,9 +133,10 @@ The answers are recorded in `test/fixtures/` (paths anonymized), and
 [`CLAUDE.md`](CLAUDE.md)). Not checked: a real Gladys instance, HTTPS with a
 self-signed certificate, reverse proxies, Transmission 3.x and older, Deluge
 1.3, the Deluge daemon reached directly (port 58846, rencode protocol: the
-integration only speaks to the web interface), libraries of thousands of torrents, the Docker image under the Gladys
-sandbox. `scripts/probe.mjs` reads real clients without changing anything and
-prints counts only, for anyone who wants to check theirs.
+integration only speaks to the web interface), libraries of thousands of
+torrents, the Docker image under the Gladys sandbox. `scripts/probe.mjs` reads
+real clients without changing anything and prints counts only, for anyone who
+wants to check theirs.
 
 ## Limitations
 

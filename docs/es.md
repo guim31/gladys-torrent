@@ -8,7 +8,7 @@ cuando termine una descarga.
 
 > **Probada con los programas reales, aún no en una casa real: sus comentarios
 > son bienvenidos.** Esta integración se ha probado con qBittorrent 4.6.3 y
-> 5.2.4, Transmission 4.0.5 y Deluge 2.1 y 2.2 funcionando a su lado, con descargas
+> 5.2.4, Transmission 4.0.5 y Deluge 2.1 funcionando a su lado, con descargas
 > entre ellos, pero aún no en una instalación real de Gladys con su NAS, su
 > proxy inverso o su Docker. Si algo no funciona como se describe, dígalo en el
 > [foro de Gladys](https://community.gladysassistant.com) o en las

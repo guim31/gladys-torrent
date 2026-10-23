@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // The three clients against their fakes (test/helpers/fakeClients.js) and
 // against the answers recorded on qbittorrent-nox 4.6.3, transmission-daemon
-// 4.0.5 and Deluge 2.1 (test/fixtures/).
+// 4.0.5 and Deluge 2.1 and 2.2 (test/fixtures/).
 // -----------------------------------------------------------------------------
 
 import { test } from 'node:test';
@@ -330,6 +330,7 @@ test('Deluge 2.2: a seeding, a paused and a failed torrent (recorded answer)', (
   assert.equal(byName['pause-file.bin'].paused, true);
   assert.equal(byName['pause-file.bin'].complete, false);
   assert.equal(byName['error-file.bin'].error, true);
+  assert.equal(byName['error-file.bin'].complete, true); // counted completed, like the others
   assert.deepEqual(countTorrents(torrents), { downloading: 0, paused: 1, completed: 2, total: 3 });
 });
 
