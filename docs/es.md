@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Siga y controle desde Gladys los clientes torrent de su servidor doméstico, en
 su red local: **qBittorrent**, **Transmission** y **Deluge**. Vea las

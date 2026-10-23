@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Follow and control the torrent clients of your home server from Gladys, over
 your local network: **qBittorrent**, **Transmission** and **Deluge**. See the

@@ -1,4 +1,4 @@
-# qBittorrent / Transmission
+# qBittorrent / Transmission / Deluge
 
 Verfolge und steuere die Torrent-Clients deines Heimservers von Gladys aus, in
 deinem lokalen Netzwerk: **qBittorrent**, **Transmission** und **Deluge**.

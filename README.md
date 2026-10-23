@@ -1,4 +1,4 @@
-# qBittorrent / Transmission for Gladys Assistant
+# qBittorrent / Transmission / Deluge for Gladys Assistant
 
 An external integration for [Gladys Assistant](https://gladysassistant.com) that
 follows and controls the self-hosted torrent clients **qBittorrent** (Web API

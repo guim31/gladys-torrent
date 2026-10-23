@@ -15,6 +15,8 @@ the notes of the version's GitHub Release.
 - Documentation: Deluge 2.2 is supported (tested on 2.2.0), and the integration
   reaches Deluge through its web interface only, not through the daemon port
   (58846).
+- The titles of the README and of the documentation name Deluge too (the
+  integration keeps its name in the store).
 
 ## [1.0.1] - 2026-10-14
 
