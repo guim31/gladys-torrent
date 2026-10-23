@@ -8,7 +8,7 @@ lass dich benachrichtigen, wenn ein Download fertig ist.
 
 > **Mit den echten Programmen getestet, aber noch nicht in einem echten
 > Zuhause: Rückmeldungen willkommen.** Diese Integration wurde gegen
-> qBittorrent 4.6.3 und 5.2.4, Transmission 4.0.5 und Deluge 2.1 getestet, die
+> qBittorrent 4.6.3 und 5.2.4, Transmission 4.0.5 und Deluge 2.1 und 2.2 getestet, die
 > daneben liefen, mit Downloads untereinander, aber noch nicht in einer echten
 > Gladys-Installation mit deinem NAS, deinem Reverse-Proxy oder deinem Docker.
 > Wenn etwas nicht wie beschrieben funktioniert, sag es bitte im
@@ -29,7 +29,8 @@ umkehrbar; das Hinzufügen von Magnet-Links ist aus, bis du es erlaubst.
     der Daemon `transmission-daemon`, oder Einstellungen → Fernsteuerung in
     den Desktop-Versionen;
   - **Deluge** mit seiner **Weboberfläche** (`deluge-web`, Port 8112), mit
-    seinem Daemon verbunden.
+    seinem Daemon verbunden (die Integration nutzt den Daemon-Port 58846
+    nicht direkt).
 - Benutzername und Passwort der Weboberfläche (Deluge: nur das Passwort,
   `deluge`, solange du es nicht geändert hast).
 

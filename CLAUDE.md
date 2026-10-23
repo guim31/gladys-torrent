@@ -267,7 +267,14 @@ par le minuteur du hub (10 s à 2 min), `should_poll: false`, `onPoll` en repli.
 - Deluge : le paquet Ubuntu plante sous Python 3.13 (zope.interface). Créer un venv
   **Python 3.12** `--system-site-packages` (pour `python3-libtorrent`), y installer
   `deluge 'setuptools<81'`, puis `python /usr/bin/deluged -d -c <dir>` et
-  `python /usr/bin/deluge-web -d -c <dir> -p 8112` (mot de passe `deluge`).
+  `python /usr/bin/deluge-web -d -c <dir> -p 8112` (mot de passe `deluge`). Plus simple :
+  l'image `lscr.io/linuxserver/deluge` (2.2.0, libtorrent 2.0, mot de passe `deluge`, interface
+  web déjà reliée au démon) sur un réseau en pont, `test:real` lancé depuis un conteneur Node du
+  même réseau. Torrents de test : `.torrent` privés sans tracker faits avec le libtorrent Python
+  de l'image ; fichier supprimé puis `core.force_recheck` = `Downloading` à 0 %, fichier remplacé
+  par un dossier puis vérification = `Error` (« Is a directory ») à 100 %, compté « terminé »
+  comme sur les deux autres logiciels. Le démon y interroge le DHT au démarrage (torrents privés :
+  rien n'y est annoncé).
 - Pour un vrai téléchargement : créer un `.torrent` (libtorrent Python), le faire seeder
   par Transmission et l'ajouter à qBittorrent avec `torrents/addPeers` vers
   `127.0.0.1:51413` (pas de tracker joignable).

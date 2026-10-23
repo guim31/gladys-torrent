@@ -8,7 +8,7 @@ download is finished.
 
 > **Tested on the real programs, not yet in a real home: feedback welcome.**
 > This integration was tested against qBittorrent 4.6.3 and 5.2.4,
-> Transmission 4.0.5 and Deluge 2.1 running next to it, with downloads between
+> Transmission 4.0.5 and Deluge 2.1 and 2.2 running next to it, with downloads between
 > them, but not yet in a real Gladys installation with your NAS, your reverse
 > proxy or your Docker setup. If something does not work as described, please
 > say so on the [Gladys forum](https://community.gladysassistant.com) or in the
@@ -27,7 +27,8 @@ is off unless you allow it.
   - **Transmission** (2.80 or later) with **remote access** on: the daemon
     `transmission-daemon`, or Preferences → Remote in the desktop versions;
   - **Deluge** with its **web interface** (`deluge-web`, port 8112),
-    connected to its daemon.
+    connected to its daemon (the integration does not use the daemon port
+    58846 directly).
 - The user name and password of the web interface (Deluge: the password only,
   `deluge` until you change it).
 
