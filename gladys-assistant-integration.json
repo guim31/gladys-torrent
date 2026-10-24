@@ -3,10 +3,10 @@
   "type": "device",
   "name": "qBittorrent / Transmission",
   "description": {
-    "en": "Follow and control qBittorrent, Transmission or Deluge: speeds, downloads, pause, slow-down.",
-    "fr": "Suivez et pilotez qBittorrent, Transmission ou Deluge : débits, téléchargements, pause, bridage.",
-    "de": "Verfolge und steuere qBittorrent, Transmission oder Deluge: Tempo, Downloads, Pause, Drosseln.",
-    "es": "Siga y controle qBittorrent, Transmission o Deluge: velocidades, descargas, pausa, freno."
+    "en": "Follow and control qBittorrent, Transmission, Deluge or rTorrent: speeds, downloads, pause.",
+    "fr": "Suivez et pilotez qBittorrent, Transmission, Deluge ou rTorrent : débits, téléchargements, pause.",
+    "de": "Verfolge und steuere qBittorrent, Transmission, Deluge oder rTorrent: Tempo, Downloads, Pause.",
+    "es": "Siga y controle qBittorrent, Transmission, Deluge o rTorrent: velocidades, descargas, pausa."
   },
   "version": "1.0.2",
   "docker_image": "ghcr.io/guim31/gladys-torrent:1.0.2",
@@ -25,10 +25,10 @@
         "es": "Sus clientes torrent"
       },
       "description": {
-        "en": "qBittorrent (web interface on), Transmission (remote access on) or Deluge (web interface, deluge-web). Up to three clients, on your network. Never deletes a torrent nor a file.",
-        "fr": "qBittorrent (interface web activée), Transmission (accès à distance activé) ou Deluge (interface web, deluge-web). Jusqu'à trois clients, sur votre réseau. Ne supprime jamais ni torrent ni fichier.",
-        "de": "qBittorrent (Weboberfläche an), Transmission (Fernzugriff an) oder Deluge (Weboberfläche, deluge-web). Bis zu drei Clients in deinem Netzwerk. Löscht nie einen Torrent oder eine Datei.",
-        "es": "qBittorrent (interfaz web activada), Transmission (acceso remoto activado) o Deluge (interfaz web, deluge-web). Hasta tres clientes en su red. Nunca borra un torrent ni un archivo."
+        "en": "qBittorrent (web interface on), Transmission (remote access on), Deluge (web interface, deluge-web) or rTorrent (XML-RPC over HTTP, as for ruTorrent). Up to three clients, on your network. Never deletes a torrent nor a file.",
+        "fr": "qBittorrent (interface web activée), Transmission (accès à distance activé), Deluge (interface web, deluge-web) ou rTorrent (XML-RPC en HTTP, comme pour ruTorrent). Jusqu'à trois clients, sur votre réseau. Ne supprime jamais ni torrent ni fichier.",
+        "de": "qBittorrent (Weboberfläche an), Transmission (Fernzugriff an), Deluge (Weboberfläche, deluge-web) oder rTorrent (XML-RPC über HTTP, wie für ruTorrent). Bis zu drei Clients in deinem Netzwerk. Löscht nie einen Torrent oder eine Datei.",
+        "es": "qBittorrent (interfaz web activada), Transmission (acceso remoto activado), Deluge (interfaz web, deluge-web) o rTorrent (XML-RPC por HTTP, como para ruTorrent). Hasta tres clientes en su red. Nunca borra un torrent ni un archivo."
       },
       "links": [
         {
@@ -98,6 +98,15 @@
             "de": "Deluge (Weboberfläche)",
             "es": "Deluge (interfaz web)"
           }
+        },
+        {
+          "value": "rtorrent",
+          "label": {
+            "en": "rTorrent (XML-RPC)",
+            "fr": "rTorrent (XML-RPC)",
+            "de": "rTorrent (XML-RPC)",
+            "es": "rTorrent (XML-RPC)"
+          }
         }
       ]
     },
@@ -111,10 +120,10 @@
         "es": "Dirección"
       },
       "description": {
-        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112. https:// for HTTPS.",
-        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112. https:// pour le HTTPS.",
-        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112. https:// für HTTPS.",
-        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112. https:// para HTTPS."
+        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112 (rTorrent: 80, /RPC2 added if no path ends with it). https:// for HTTPS.",
+        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112 (rTorrent : 80, /RPC2 ajouté si le chemin ne le contient pas). https:// pour le HTTPS.",
+        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112 (rTorrent: 80, /RPC2 wird ergänzt, wenn der Pfad nicht darauf endet). https:// für HTTPS.",
+        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112 (rTorrent: 80, se añade /RPC2 si la ruta no termina así). https:// para HTTPS."
       },
       "placeholder": {
         "en": "e.g. 192.168.1.10:8080",
@@ -135,10 +144,10 @@
         "es": "Nombre de usuario"
       },
       "description": {
-        "en": "qBittorrent and Transmission. Empty if the client asks for none. Deluge: leave empty.",
-        "fr": "qBittorrent et Transmission. Vide si le client n'en demande pas. Deluge : laissez vide.",
-        "de": "qBittorrent und Transmission. Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
-        "es": "qBittorrent y Transmission. Vacío si el cliente no lo pide. Deluge: déjelo vacío."
+        "en": "qBittorrent, Transmission, rTorrent (HTTP login of the web server). Empty if the client asks for none. Deluge: leave empty.",
+        "fr": "qBittorrent, Transmission, rTorrent (identifiant HTTP du serveur web). Vide si le client n'en demande pas. Deluge : laissez vide.",
+        "de": "qBittorrent, Transmission, rTorrent (HTTP-Anmeldung des Webservers). Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
+        "es": "qBittorrent, Transmission, rTorrent (usuario HTTP del servidor web). Vacío si el cliente no lo pide. Deluge: déjelo vacío."
       },
       "required": false,
       "default": ""
@@ -238,6 +247,15 @@
             "de": "Deluge (Weboberfläche)",
             "es": "Deluge (interfaz web)"
           }
+        },
+        {
+          "value": "rtorrent",
+          "label": {
+            "en": "rTorrent (XML-RPC)",
+            "fr": "rTorrent (XML-RPC)",
+            "de": "rTorrent (XML-RPC)",
+            "es": "rTorrent (XML-RPC)"
+          }
         }
       ]
     },
@@ -251,10 +269,10 @@
         "es": "Dirección"
       },
       "description": {
-        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112. https:// for HTTPS.",
-        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112. https:// pour le HTTPS.",
-        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112. https:// für HTTPS.",
-        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112. https:// para HTTPS."
+        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112 (rTorrent: 80, /RPC2 added if no path ends with it). https:// for HTTPS.",
+        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112 (rTorrent : 80, /RPC2 ajouté si le chemin ne le contient pas). https:// pour le HTTPS.",
+        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112 (rTorrent: 80, /RPC2 wird ergänzt, wenn der Pfad nicht darauf endet). https:// für HTTPS.",
+        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112 (rTorrent: 80, se añade /RPC2 si la ruta no termina así). https:// para HTTPS."
       },
       "placeholder": {
         "en": "e.g. 192.168.1.10:8080",
@@ -275,10 +293,10 @@
         "es": "Nombre de usuario"
       },
       "description": {
-        "en": "qBittorrent and Transmission. Empty if the client asks for none. Deluge: leave empty.",
-        "fr": "qBittorrent et Transmission. Vide si le client n'en demande pas. Deluge : laissez vide.",
-        "de": "qBittorrent und Transmission. Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
-        "es": "qBittorrent y Transmission. Vacío si el cliente no lo pide. Deluge: déjelo vacío."
+        "en": "qBittorrent, Transmission, rTorrent (HTTP login of the web server). Empty if the client asks for none. Deluge: leave empty.",
+        "fr": "qBittorrent, Transmission, rTorrent (identifiant HTTP du serveur web). Vide si le client n'en demande pas. Deluge : laissez vide.",
+        "de": "qBittorrent, Transmission, rTorrent (HTTP-Anmeldung des Webservers). Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
+        "es": "qBittorrent, Transmission, rTorrent (usuario HTTP del servidor web). Vacío si el cliente no lo pide. Deluge: déjelo vacío."
       },
       "required": false,
       "default": ""
@@ -378,6 +396,15 @@
             "de": "Deluge (Weboberfläche)",
             "es": "Deluge (interfaz web)"
           }
+        },
+        {
+          "value": "rtorrent",
+          "label": {
+            "en": "rTorrent (XML-RPC)",
+            "fr": "rTorrent (XML-RPC)",
+            "de": "rTorrent (XML-RPC)",
+            "es": "rTorrent (XML-RPC)"
+          }
         }
       ]
     },
@@ -391,10 +418,10 @@
         "es": "Dirección"
       },
       "description": {
-        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112. https:// for HTTPS.",
-        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112. https:// pour le HTTPS.",
-        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112. https:// für HTTPS.",
-        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112. https:// para HTTPS."
+        "en": "IP address or name, with :port. Without a port, the default one: 8080, 9091 or 8112 (rTorrent: 80, /RPC2 added if no path ends with it). https:// for HTTPS.",
+        "fr": "Adresse IP ou nom, avec :port. Sans port, celui par défaut : 8080, 9091 ou 8112 (rTorrent : 80, /RPC2 ajouté si le chemin ne le contient pas). https:// pour le HTTPS.",
+        "de": "IP-Adresse oder Name, mit :Port. Ohne Port der Standard: 8080, 9091 oder 8112 (rTorrent: 80, /RPC2 wird ergänzt, wenn der Pfad nicht darauf endet). https:// für HTTPS.",
+        "es": "Dirección IP o nombre, con :puerto. Sin puerto, el predeterminado: 8080, 9091 u 8112 (rTorrent: 80, se añade /RPC2 si la ruta no termina así). https:// para HTTPS."
       },
       "placeholder": {
         "en": "e.g. 192.168.1.10:8080",
@@ -415,10 +442,10 @@
         "es": "Nombre de usuario"
       },
       "description": {
-        "en": "qBittorrent and Transmission. Empty if the client asks for none. Deluge: leave empty.",
-        "fr": "qBittorrent et Transmission. Vide si le client n'en demande pas. Deluge : laissez vide.",
-        "de": "qBittorrent und Transmission. Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
-        "es": "qBittorrent y Transmission. Vacío si el cliente no lo pide. Deluge: déjelo vacío."
+        "en": "qBittorrent, Transmission, rTorrent (HTTP login of the web server). Empty if the client asks for none. Deluge: leave empty.",
+        "fr": "qBittorrent, Transmission, rTorrent (identifiant HTTP du serveur web). Vide si le client n'en demande pas. Deluge : laissez vide.",
+        "de": "qBittorrent, Transmission, rTorrent (HTTP-Anmeldung des Webservers). Leer, wenn der Client keinen verlangt. Deluge: leer lassen.",
+        "es": "qBittorrent, Transmission, rTorrent (usuario HTTP del servidor web). Vacío si el cliente no lo pide. Deluge: déjelo vacío."
       },
       "required": false,
       "default": ""
@@ -681,10 +708,10 @@
             "es": "Categoría o etiqueta"
           },
           "description": {
-            "en": "Only the torrents of this qBittorrent category, Transmission or Deluge label. Empty: all.",
-            "fr": "Seulement les torrents de cette catégorie qBittorrent, étiquette Transmission ou Deluge. Vide : tous.",
-            "de": "Nur die Torrents dieser qBittorrent-Kategorie bzw. dieses Transmission- oder Deluge-Labels. Leer: alle.",
-            "es": "Solo los torrents de esta categoría de qBittorrent o etiqueta de Transmission o Deluge. Vacío: todos."
+            "en": "Only the torrents of this qBittorrent category, Transmission, Deluge or ruTorrent label. Empty: all.",
+            "fr": "Seulement les torrents de cette catégorie qBittorrent, étiquette Transmission, Deluge ou ruTorrent. Vide : tous.",
+            "de": "Nur die Torrents dieser qBittorrent-Kategorie bzw. dieses Transmission-, Deluge- oder ruTorrent-Labels. Leer: alle.",
+            "es": "Solo los torrents de esta categoría de qBittorrent o etiqueta de Transmission, Deluge o ruTorrent. Vacío: todos."
           }
         }
       ],
@@ -767,10 +794,10 @@
             "es": "Categoría o etiqueta"
           },
           "description": {
-            "en": "Only the torrents of this qBittorrent category, Transmission or Deluge label. Empty: all.",
-            "fr": "Seulement les torrents de cette catégorie qBittorrent, étiquette Transmission ou Deluge. Vide : tous.",
-            "de": "Nur die Torrents dieser qBittorrent-Kategorie bzw. dieses Transmission- oder Deluge-Labels. Leer: alle.",
-            "es": "Solo los torrents de esta categoría de qBittorrent o etiqueta de Transmission o Deluge. Vacío: todos."
+            "en": "Only the torrents of this qBittorrent category, Transmission, Deluge or ruTorrent label. Empty: all.",
+            "fr": "Seulement les torrents de cette catégorie qBittorrent, étiquette Transmission, Deluge ou ruTorrent. Vide : tous.",
+            "de": "Nur die Torrents dieser qBittorrent-Kategorie bzw. dieses Transmission-, Deluge- oder ruTorrent-Labels. Leer: alle.",
+            "es": "Solo los torrents de esta categoría de qBittorrent o etiqueta de Transmission, Deluge o ruTorrent. Vacío: todos."
           }
         }
       ],

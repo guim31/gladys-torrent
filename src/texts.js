@@ -150,10 +150,10 @@ export const ACTION_TEXT = {
     es: 'Ningún cliente torrent ha aceptado la orden.',
   },
   noAltSpeed: {
-    en: 'Deluge has no alternative speed limits: choose a qBittorrent or Transmission client.',
-    fr: "Deluge n'a pas de limites de vitesse alternatives : choisissez un client qBittorrent ou Transmission.",
-    de: 'Deluge hat keine alternativen Geschwindigkeitslimits: Wähle einen qBittorrent- oder Transmission-Client.',
-    es: 'Deluge no tiene límites de velocidad alternativos: elija un cliente qBittorrent o Transmission.',
+    en: 'Deluge and rTorrent have no alternative speed limits: choose a qBittorrent or Transmission client.',
+    fr: "Deluge et rTorrent n'ont pas de limites de vitesse alternatives : choisissez un client qBittorrent ou Transmission.",
+    de: 'Deluge und rTorrent haben keine alternativen Geschwindigkeitslimits: Wähle einen qBittorrent- oder Transmission-Client.',
+    es: 'Deluge y rTorrent no tienen límites de velocidad alternativos: elija un cliente qBittorrent o Transmission.',
   },
   magnetDisabled: {
     en: 'Adding torrents is off: tick "Allow adding magnet links" in the configuration.',

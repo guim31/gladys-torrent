@@ -4,7 +4,7 @@
 // the rest of the code never deals with strings, blanks or `undefined`.
 //
 // Up to three torrent clients, each in its own slot: software (qBittorrent,
-// Transmission or Deluge), address, user name, password, name. The device
+// Transmission, Deluge or rTorrent), address, user name, password, name. The device
 // identity is the slot and the software (src/devices.js): changing the
 // address of a slot keeps the device and its history.
 // -----------------------------------------------------------------------------
@@ -17,10 +17,12 @@ export const CLIENT_TYPES = Object.freeze({
   QBITTORRENT: 'qbittorrent',
   TRANSMISSION: 'transmission',
   DELUGE: 'deluge',
+  RTORRENT: 'rtorrent',
 });
 
 // The port each software listens on out of the box, added when the address
-// typed has neither scheme nor port (`192.168.1.10`).
+// typed has neither scheme nor port (`192.168.1.10`). rTorrent has none: its
+// XML-RPC is published by a web server, on port 80 in most setups.
 export const DEFAULT_PORTS = {
   [CLIENT_TYPES.QBITTORRENT]: 8080,
   [CLIENT_TYPES.TRANSMISSION]: 9091,
@@ -32,6 +34,7 @@ export const TYPE_NAMES = {
   [CLIENT_TYPES.QBITTORRENT]: 'qBittorrent',
   [CLIENT_TYPES.TRANSMISSION]: 'Transmission',
   [CLIENT_TYPES.DELUGE]: 'Deluge',
+  [CLIENT_TYPES.RTORRENT]: 'rTorrent',
 };
 
 // Refresh intervals offered in the configuration, in seconds.

@@ -35,8 +35,8 @@ What the integration holds, and where:
 - **Secrets**: the user names and passwords of the torrent clients live in the
   Gladys configuration of the integration (password fields are `secret`). The
   integration keeps them in memory only, sends them only to the address typed
-  for that client (qBittorrent login form, Transmission basic authentication,
-  Deluge login), and never writes them to the logs. The session cookies of
+  for that client (qBittorrent login form, Transmission and rTorrent basic
+  authentication, Deluge login), and never writes them to the logs. The session cookies of
   qBittorrent and Deluge stay in memory and are closed when the integration
   stops.
 - **`/data`**: nothing is written there.
@@ -51,4 +51,4 @@ What the integration holds, and where:
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
 and the torrent clients the integration talks to (qBittorrent, Transmission,
-Deluge).
+Deluge, rTorrent and the web server in front of it).

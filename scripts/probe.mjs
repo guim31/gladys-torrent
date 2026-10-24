@@ -8,6 +8,7 @@
 //   QBT_URL=http://192.168.1.10:8080 QBT_USERNAME=admin QBT_PASSWORD=… \
 //   TRANSMISSION_URL=… TRANSMISSION_USERNAME=… TRANSMISSION_PASSWORD=… \
 //   DELUGE_URL=… DELUGE_PASSWORD=… \
+//   (or RTORRENT_URL=… RTORRENT_USERNAME=… RTORRENT_PASSWORD=…, in Deluge's slot) \
 //   node scripts/probe.mjs        # add ALLOW_SELF_SIGNED=1 for a self-signed HTTPS
 // -----------------------------------------------------------------------------
 
@@ -24,14 +25,25 @@ const config = normalizeConfig({
   client_2_url: process.env.TRANSMISSION_URL ?? '',
   client_2_username: process.env.TRANSMISSION_USERNAME ?? '',
   client_2_password: process.env.TRANSMISSION_PASSWORD ?? '',
-  client_3_type: 'deluge',
-  client_3_url: process.env.DELUGE_URL ?? '',
-  client_3_password: process.env.DELUGE_PASSWORD ?? '',
+  ...(process.env.RTORRENT_URL
+    ? {
+        client_3_type: 'rtorrent',
+        client_3_url: process.env.RTORRENT_URL,
+        client_3_username: process.env.RTORRENT_USERNAME ?? '',
+        client_3_password: process.env.RTORRENT_PASSWORD ?? '',
+      }
+    : {
+        client_3_type: 'deluge',
+        client_3_url: process.env.DELUGE_URL ?? '',
+        client_3_password: process.env.DELUGE_PASSWORD ?? '',
+      }),
   allow_self_signed: process.env.ALLOW_SELF_SIGNED === '1',
 });
 
 if (config.clients.length === 0) {
-  console.log('Set QBT_URL, TRANSMISSION_URL or DELUGE_URL (see the header of this file).');
+  console.log(
+    'Set QBT_URL, TRANSMISSION_URL, DELUGE_URL or RTORRENT_URL (see the header of this file).',
+  );
   process.exit(2);
 }
 
