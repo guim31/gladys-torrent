@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-24
+
 ### Added
 
 - rTorrent (0.9 and later, tested on 0.16.25), through its XML-RPC published
@@ -55,6 +57,7 @@ the notes of the version's GitHub Release.
   the four languages.
 - The integration never deletes a torrent or a file.
 
-[Unreleased]: https://github.com/guim31/gladys-torrent/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/guim31/gladys-torrent/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/guim31/gladys-torrent/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/guim31/gladys-torrent/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/guim31/gladys-torrent/releases/tag/v1.0.1
