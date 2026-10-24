@@ -212,7 +212,10 @@ are released by the Release workflow (Actions → Release), never by hand.
   [`deluge`](https://github.com/home-assistant/core/tree/dev/homeassistant/components/deluge)
   and [`rtorrent`](https://github.com/home-assistant/core/tree/dev/homeassistant/components/rtorrent)
   integrations (Apache-2.0): the choice of sensors and switches.
-- Cover: the official logos of the three programs, the Deluge one from
+- Cover: the official logos of the qBittorrent, Transmission and Deluge
+  programs, and the ruTorrent icon for rTorrent, from
+  [`images/favicon-196x196.png`](https://github.com/Novik/ruTorrent/blob/master/images/favicon-196x196.png)
+  in the ruTorrent repository (GPL-3.0); the Deluge one from
   [`deluge/ui/data/pixmaps/deluge.svg`](https://github.com/deluge-torrent/deluge/blob/develop/deluge/ui/data/pixmaps/deluge.svg)
   in the Deluge repository (GPL-3.0).
 - The architecture, the conformity and language tests follow
