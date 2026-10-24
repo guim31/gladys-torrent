@@ -477,6 +477,7 @@ const READ_FIELDS = [
   'd.directory=',
   'd.is_meta=',
   'd.load_date=',
+  'd.wanted_chunks=',
 ];
 
 export const rtorrentFixture = (name = 'read-0.16.25.xml') =>
@@ -500,7 +501,12 @@ export class FakeRtorrent {
     this.up = up;
     this.directory = directory;
     this.torrents = new Map(
-      rows.map((row) => [row[0], Object.fromEntries(READ_FIELDS.map((f, i) => [f, row[i]]))]),
+      rows.map((row) => {
+        const torrent = Object.fromEntries(READ_FIELDS.map((f, i) => [f, row[i]]));
+        // Not in the recorded answers: what rTorrent 0.16.25 gave for them.
+        torrent['d.wanted_chunks='] ??= torrent['d.complete='] === 1 ? 0 : 12;
+        return [row[0], torrent];
+      }),
     );
     this.online = true;
     this.requests = [];
@@ -579,6 +585,7 @@ export class FakeRtorrent {
             'd.custom1=': '',
             'd.directory=': '/data/rtorrent/.session',
             'd.is_meta=': 1,
+            'd.wanted_chunks=': 1,
           });
         }
         return 0;

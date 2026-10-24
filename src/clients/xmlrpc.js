@@ -195,8 +195,9 @@ class Reader {
         break;
       }
       case 'double': {
-        result = Number(this.leaf('double').trim());
-        if (Number.isNaN(result)) {
+        const text = this.leaf('double').trim();
+        result = Number(text);
+        if (text === '' || Number.isNaN(result)) {
           this.fail('Bad double');
         }
         break;
@@ -251,7 +252,13 @@ class Reader {
     while (this.peekTag()?.name === 'member' && !this.peekTag().closing) {
       this.open('member');
       const name = this.leaf('name');
-      object[name] = this.value();
+      // defineProperty: a member named "__proto__" stays a plain property.
+      Object.defineProperty(object, name, {
+        value: this.value(),
+        enumerable: true,
+        writable: true,
+        configurable: true,
+      });
       this.close('member');
     }
     this.close('struct');

@@ -55,6 +55,7 @@ const FIELDS = [
   'd.directory=',
   'd.is_meta=',
   'd.load_date=',
+  'd.wanted_chunks=',
 ];
 const NEWER_FIELDS = ['d.is_meta=', 'd.load_date='];
 
@@ -94,14 +95,21 @@ export function toTorrent(row, fields = FIELDS) {
   // rTorrent without d.is_meta ("<HASH>.meta").
   const meta = 'is_meta' in raw ? Number(raw.is_meta) === 1 : /\.meta$/i.test(name);
   const hasMetadata = !meta && size > 0;
-  const progress = hasMetadata
-    ? Math.min(1, Math.max(0, (Number(raw.completed_bytes) || 0) / size))
-    : 0;
   const started = Number(raw.state) === 1;
   const active = Number(raw.is_active) === 1;
   const error = isError(raw.message);
   const checking = Number(raw.is_hash_checking) === 1;
-  const complete = hasMetadata && Number(raw.complete) === 1;
+  // d.complete waits for every chunk: with files turned off in ruTorrent, the
+  // torrent is done once no wanted chunk is missing (d.wanted_chunks 0).
+  const wanted = Number(raw.wanted_chunks);
+  const complete =
+    hasMetadata &&
+    (Number(raw.complete) === 1 || ('wanted_chunks' in raw && wanted === 0 && !checking));
+  const progress = complete
+    ? 1
+    : hasMetadata
+      ? Math.min(1, Math.max(0, (Number(raw.completed_bytes) || 0) / size))
+      : 0;
   return {
     hash,
     name,
@@ -190,17 +198,22 @@ export class RtorrentClient {
         this.authorization ? 'User name or password refused' : 'The web server asks for a login',
         { status: 401 },
       );
-      this.guard.failed(error);
+      // Only a refused password risks a ban; a missing one is not retried in a loop either way.
+      if (this.authorization) {
+        this.guard.failed(error);
+      }
       throw error;
     }
     if (response.status !== 200) {
       throw statusError(response, method);
     }
-    this.guard.succeeded();
     try {
-      return decodeResponse(response.body);
+      const result = decodeResponse(response.body);
+      this.guard.succeeded();
+      return result;
     } catch (err) {
       if (err instanceof XmlRpcFault) {
+        this.guard.succeeded();
         throw Object.assign(
           new ClientError(ERROR_KINDS.REJECTED, `${method}: ${err.message.slice(0, 160)}`),
           { fault: err },
@@ -231,14 +244,14 @@ export class RtorrentClient {
     });
   }
 
-  async readOnce(options) {
+  async readOnce(fields, options) {
     const [version, down, up, directory, rows] = await this.multicall(
       [
         ['system.client_version', []],
         ['throttle.global_down.rate', ['']],
         ['throttle.global_up.rate', ['']],
         ['directory.default', ['']],
-        ['d.multicall2', ['', 'main', ...this.fields]],
+        ['d.multicall2', ['', 'main', ...fields]],
       ],
       options,
     );
@@ -250,26 +263,25 @@ export class RtorrentClient {
       version: this.version,
       downloadSpeed: Number(down) || 0,
       uploadSpeed: Number(up) || 0,
-      freeSpace: freeSpaceOf(rows, this.fields, directory),
+      freeSpace: freeSpaceOf(rows, fields, directory),
       altSpeed: null,
       torrents: rows
-        .filter((row) => Array.isArray(row) && row.length === this.fields.length)
-        .map((row) => toTorrent(row, this.fields)),
+        .filter((row) => Array.isArray(row) && row.length === fields.length)
+        .map((row) => toTorrent(row, fields)),
     };
   }
 
   /** @returns {Promise<object>} a reading, in the shape of src/model.js */
   async read({ force = false } = {}) {
+    const fields = this.fields;
     try {
-      return await this.readOnce({ force });
+      return await this.readOnce(fields, { force });
     } catch (err) {
       const message = err.fault?.message ?? '';
-      if (
-        this.fields === FIELDS &&
-        NEWER_FIELDS.some((field) => message.includes(field.slice(0, -1)))
-      ) {
+      // Compared with the fields sent: two readings at once may both get the fault.
+      if (fields === FIELDS && NEWER_FIELDS.some((field) => message.includes(field.slice(0, -1)))) {
         this.fields = FIELDS.filter((field) => !NEWER_FIELDS.includes(field));
-        return this.readOnce({ force });
+        return this.readOnce(this.fields, { force });
       }
       throw err;
     }

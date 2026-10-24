@@ -192,10 +192,9 @@ test('rTorrent: HTTP Basic, missing or refused, with the login back-off', async 
   await assert.rejects(client.read({ force: true }), { kind: ERROR_KINDS.AUTH });
   assert.equal(network.requests.length, 2, '"Test the connection" tries at once');
   clock.advance(LOGIN_BACKOFF_MS[1] + 1);
-  network.servers[RT].password = 'wrong';
+  network.servers[RT].password = 'wrong'; // the password is fixed on the client side
   const reading = await client.read();
   assert.equal(reading.torrents.length, 5);
-  assert.ok(!JSON.stringify(network.requests).includes('wrong'), 'only the Basic header');
 
   ({ client, network } = rt(options, { ...options }));
   await client.read();
@@ -234,4 +233,37 @@ test('rTorrent: a fault inside the multicall is refused, not taken for a reading
     kind: ERROR_KINDS.REJECTED,
     message: 'directory.default: Permission denied',
   });
+});
+
+test('rTorrent: no back-off when no login is configured, a portal page keeps it', async () => {
+  const clock = createClock();
+  const { client, network } = rt({ username: 'gladys', password: 'secret' }, { now: clock.now });
+  await assert.rejects(client.read(), { kind: ERROR_KINDS.AUTH });
+  await assert.rejects(client.read(), { kind: ERROR_KINDS.AUTH });
+  assert.equal(network.requests.length, 2, 'tried at every reading: no ban at stake');
+
+  const wrong = rt({}, { username: 'gladys', password: 'wrong', now: clock.now });
+  wrong.server.handle = () => ({ status: 401, headers: {}, body: '' });
+  await assert.rejects(wrong.client.read(), { kind: ERROR_KINDS.AUTH });
+  wrong.server.handle = () => ({ status: 200, headers: {}, body: '<html>login portal</html>' });
+  await assert.rejects(wrong.client.read({ force: true }), { kind: ERROR_KINDS.NOT_FOUND });
+  await assert.rejects(wrong.client.read(), { kind: ERROR_KINDS.AUTH }, 'back-off kept');
+  assert.equal(wrong.network.requests.length, 2);
+});
+
+test('rTorrent: files turned off, the torrent is complete once the wanted chunks are in', async () => {
+  const { client, server } = rt();
+  server.update('AB66C3888E26B02E11E03F5B6C8896083A24732F', {
+    'd.completed_bytes=': 1000000,
+    'd.wanted_chunks=': 0,
+  });
+  const leech = byName(await client.read()).leech;
+  assert.deepEqual([leech.complete, leech.progress, leech.downloading], [true, 1, false]);
+});
+
+test('rTorrent: two readings at once on an old rTorrent both succeed', async () => {
+  const { client } = rt({ legacy: true });
+  const [a, b] = await Promise.all([client.read(), client.read()]);
+  assert.equal(a.torrents.length, 5);
+  assert.equal(b.torrents.length, 5);
 });

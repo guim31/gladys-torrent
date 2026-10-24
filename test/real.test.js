@@ -90,9 +90,11 @@ for (const client of CLIENTS) {
       assert.equal((await gladys.fake.sceneAction('pause_all', {})).success, true);
       await settle(1500);
       await app.hub.pollAll();
-      // A torrent in error (rTorrent stops one whose data went missing) cannot be paused.
-      const paused = record.reading.torrents.filter((t) => t.paused || t.complete || t.error);
-      assert.equal(paused.length, total, 'every torrent paused (or complete, or in error)');
+      // rTorrent stops a torrent whose data went missing, with an error: it cannot be paused.
+      const paused = record.reading.torrents.filter(
+        (t) => t.paused || t.complete || (client.type === 'rtorrent' && t.error),
+      );
+      assert.equal(paused.length, total, 'every torrent paused (or complete)');
       assert.equal((await gladys.fake.sceneAction('resume_all', {})).success, true);
       await settle(1500);
       await app.hub.pollAll();

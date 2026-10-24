@@ -117,3 +117,17 @@ test('comments between tags are skipped', () => {
     1,
   );
 });
+
+test('a member named __proto__ stays a plain property, an empty double is refused', () => {
+  const struct = decodeResponse(
+    answer(
+      '<value><struct><member><name>__proto__</name><value><i4>1</i4></value></member></struct></value>',
+    ),
+  );
+  assert.equal(Object.getPrototypeOf(struct), Object.prototype);
+  assert.equal(Object.getOwnPropertyDescriptor(struct, '__proto__').value, 1);
+  assert.throws(
+    () => decodeResponse(answer('<value><double></double></value>')),
+    XmlRpcFormatError,
+  );
+});
