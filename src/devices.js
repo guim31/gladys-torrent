@@ -3,10 +3,10 @@
 //
 // Identity: the software and the configuration slot (1 to 3), e.g.
 // `qbittorrent:1`, not the address: moving a client to another port or to
-// HTTPS keeps the device and its history. None of the three programs exposes
+// HTTPS keeps the device and its history. None of the four programs exposes
 // a stable instance id to use instead. Choosing another software in a slot
-// makes another device: its features are not the same (Deluge has no
-// alternative speed mode).
+// makes another device: its features are not the same (Deluge and rTorrent
+// have no alternative speed mode).
 //
 // Features (category/type couples of the core table, see
 // test/gladys-rules.test.js):
@@ -16,7 +16,8 @@
 //   - current downloads: text/text, the first three with their percentage;
 //   - free space of the download folder: data/size, in GB;
 //   - alternative speed limits (qBittorrent "alternative rate limits",
-//     Transmission "turtle mode"): switch/binary, writable, absent on Deluge;
+//     Transmission "turtle mode"): switch/binary, writable, absent on Deluge
+//     and rTorrent;
 //   - connected: input/binary, 1 while the client answers.
 //
 // The devices are published with should_poll: false: the integration reads
@@ -186,7 +187,7 @@ const FEATURES = {
   },
 };
 
-/** The feature keys of a client: no alternative speed switch on Deluge. */
+/** The feature keys of a client: no alternative speed switch on Deluge and rTorrent. */
 export const featureKeys = (supportsAltSpeed) =>
   Object.keys(FEATURES).filter((key) => key !== FEATURE_KEYS.ALT_SPEED || supportsAltSpeed);
 

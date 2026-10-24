@@ -6,7 +6,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { MAX_EVENTS_PER_READING, TRIGGERS } from '../src/hub.js';
-import { QB_CONFIG, QB_URL, THREE_CLIENTS, createAll, createWorld, ids } from './helpers/world.js';
+import {
+  QB_CONFIG,
+  QB_URL,
+  RT_URL,
+  THREE_CLIENTS,
+  WITH_RTORRENT,
+  createAll,
+  createWorld,
+  ids,
+} from './helpers/world.js';
 
 const MAGNET = 'magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567&dn=Sintel';
 const [UBUNTU, DEBIAN] = [
@@ -224,7 +233,7 @@ test('scene actions: alternative speed on the clients that have it', async (t) =
     device: ids(w.gladys, 'deluge', 3).device,
   });
   assert.equal(ack.success, false);
-  assert.match(ack.error, /Deluge has no alternative speed limits/);
+  assert.match(ack.error, /Deluge and rTorrent have no alternative speed limits/);
 });
 
 test('scene actions: a magnet link only when allowed, and only a magnet link', async (t) => {
@@ -292,9 +301,77 @@ test('never a request that deletes a torrent or its data', async (t) => {
   await w.fake.widgetAction('torrents', 'pause_all', {}, { settings: {} });
   await w.app.stop();
   const sent = w.network.requests.map((r) => `${r.url} ${r.options.body ?? ''}`).join('\n');
-  // qBittorrent torrents/delete, Transmission torrent-remove, Deluge core.remove_torrent(s).
+  // qBittorrent torrents/delete, Transmission torrent-remove, Deluge core.remove_torrent(s),
+  // rTorrent d.erase.
   assert.doesNotMatch(
     sent,
-    /torrents\/delete|torrent-remove|remove_torrent|deleteFiles|delete-local-data/i,
+    /torrents\/delete|torrent-remove|remove_torrent|deleteFiles|delete-local-data|d\.erase/i,
   );
+});
+
+test('rTorrent: a device like Deluge (no alternative speed), its states, pause and resume', async (t) => {
+  const w = await world(t, { config: { ...WITH_RTORRENT, allow_magnet: true } });
+  const rtorrent = ids(w.gladys, 'rtorrent', 3);
+  const device = w.fake.discoveredDevices.find((d) => d.external_id === rtorrent.device);
+  assert.equal(device.name, 'rTorrent 198.51.100.13');
+  assert.deepEqual(device.params, [
+    { name: 'TORRENT_CLIENT_SOFTWARE', value: 'rTorrent' },
+    { name: 'TORRENT_CLIENT_URL', value: RT_URL },
+  ]);
+  assert.deepEqual(
+    device.features.map((f) => f.external_id.split(':').pop()),
+    [
+      'download_speed',
+      'upload_speed',
+      'torrents_downloading',
+      'torrents_paused',
+      'torrents_completed',
+      'current_downloads',
+      'free_space',
+      'connected',
+    ],
+  );
+  await createAll(w);
+  assert.equal(w.fake.lastState(rtorrent.feature('torrents_completed')), 3);
+  assert.equal(w.fake.lastState(rtorrent.feature('torrents_downloading')), 2);
+  assert.equal(w.fake.lastState(rtorrent.feature('free_space')), 42.9);
+  assert.equal(w.fake.lastState(rtorrent.feature('connected')), 1);
+
+  let ack = await w.fake.sceneAction('pause_all', { device: rtorrent.device });
+  assert.deepEqual(ack.data.outputs, { clients: 1 });
+  assert.equal(
+    w.fake.lastState(rtorrent.feature('torrents_paused')),
+    1,
+    'the download in progress',
+  );
+  ack = await w.fake.sceneAction('resume_all', { device: rtorrent.device });
+  assert.equal(ack.success, true);
+  assert.equal(w.fake.lastState(rtorrent.feature('torrents_paused')), 0);
+
+  ack = await w.fake.sceneAction('set_alt_speed', { state: 'on' });
+  assert.deepEqual(ack.data.outputs, { clients: 2 }, 'rTorrent skipped');
+  ack = await w.fake.sceneAction('set_alt_speed', { state: 'on', device: rtorrent.device });
+  assert.match(ack.error, /Deluge and rTorrent have no alternative speed limits/);
+
+  ack = await w.fake.sceneAction('add_magnet', { magnet: MAGNET, device: rtorrent.device });
+  assert.equal(ack.success, true);
+  assert.ok(w.rt.torrents.has('0123456789ABCDEF0123456789ABCDEF01234567'));
+
+  const report = await w.fake.action('test_connection', {});
+  assert.match(report.data.message.en, /rTorrent 198\.51\.100\.13: OK, rTorrent 0\.16\.25, /);
+  await w.app.stop();
+  const sent = w.network.requests.map((r) => `${r.url} ${r.options.body ?? ''}`).join('\n');
+  assert.doesNotMatch(sent, /d\.erase|torrents\/delete|torrent-remove|remove_torrent/);
+});
+
+test('rTorrent: a refused password is reported, the other clients go on', async (t) => {
+  const w = await world(t, { config: { ...WITH_RTORRENT, client_3_password: 'wrong' } });
+  const ack = await w.fake.action('test_connection', {});
+  assert.equal(
+    ack.data.message.en.split('\n')[2],
+    'rTorrent 198.51.100.13: user name or password refused',
+  );
+  await createAll(w);
+  assert.equal(w.fake.lastState(ids(w.gladys, 'rtorrent', 3).feature('connected')), 0);
+  assert.equal(w.fake.lastState(ids(w.gladys).feature('connected')), 1);
 });

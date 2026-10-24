@@ -9,8 +9,8 @@
 // speed, upload speed, torrents in progress), one status list (unreachable
 // clients, the downloads in progress with their percentage, the paused and
 // completed counts) and up to three direct buttons: Pause all, Resume all,
-// Alternative speed (a toggle; absent when only Deluge is shown, it has no
-// such mode). The figures are sent as values, not bound to device features,
+// Alternative speed (a toggle; absent when only Deluge or rTorrent is shown,
+// neither has such a mode). The figures are sent as values, not bound to device features,
 // so the widget works before the devices are added and sums several clients.
 // -----------------------------------------------------------------------------
 

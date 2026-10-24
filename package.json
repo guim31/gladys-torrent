@@ -2,7 +2,7 @@
   "name": "gladys-torrent",
   "version": "1.0.2",
   "private": true,
-  "description": "Gladys Assistant external integration for the torrent clients qBittorrent, Transmission and Deluge.",
+  "description": "Gladys Assistant external integration for the torrent clients qBittorrent, Transmission, Deluge and rTorrent.",
   "type": "module",
   "main": "index.js",
   "scripts": {

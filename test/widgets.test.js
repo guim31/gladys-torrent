@@ -7,7 +7,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validateWidgetContent } from '@gladysassistant/integration-sdk';
 import { ACTIONS } from '../src/widgets.js';
-import { QB_CONFIG, THREE_CLIENTS, createWorld, ids } from './helpers/world.js';
+import { QB_CONFIG, THREE_CLIENTS, WITH_RTORRENT, createWorld, ids } from './helpers/world.js';
 
 async function world(t, options) {
   const w = await createWorld(options);
@@ -66,6 +66,16 @@ test('one client chosen in the settings; Deluge alone has no speed button', asyn
   );
   const gone = await content(w, { device: 'ext:test-integration:qbittorrent:3' });
   assert.match(gone.components[0].text, /no longer in the configuration/);
+});
+
+test('rTorrent alone has no speed button either', async (t) => {
+  const w = await world(t, { config: WITH_RTORRENT });
+  const rtorrent = await content(w, { device: ids(w.gladys, 'rtorrent', 3).device });
+  assert.deepEqual(
+    byType(rtorrent, 'button').map((b) => b.action.key),
+    [ACTIONS.PAUSE_ALL, ACTIONS.RESUME_ALL],
+  );
+  assert.deepEqual(validateWidgetContent(rtorrent), []);
 });
 
 test('the speed button shows the active mode by its icon, never by its style', async (t) => {

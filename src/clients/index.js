@@ -7,12 +7,14 @@
 import { CLIENT_TYPES } from '../config.js';
 import { DelugeClient } from './deluge.js';
 import { QbittorrentClient } from './qbittorrent.js';
+import { RtorrentClient } from './rtorrent.js';
 import { TransmissionClient } from './transmission.js';
 
 const CLASSES = {
   [CLIENT_TYPES.QBITTORRENT]: QbittorrentClient,
   [CLIENT_TYPES.TRANSMISSION]: TransmissionClient,
   [CLIENT_TYPES.DELUGE]: DelugeClient,
+  [CLIENT_TYPES.RTORRENT]: RtorrentClient,
 };
 
 /**

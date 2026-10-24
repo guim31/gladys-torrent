@@ -40,6 +40,8 @@ src/model.js                      what a reading means: counters, downloads text
 src/clients/qbittorrent.js        qBittorrent Web API v2 (incremental sync/maindata)
 src/clients/transmission.js       Transmission RPC (CSRF session id)
 src/clients/deluge.js             Deluge web JSON-RPC (connects the web UI to its daemon)
+src/clients/rtorrent.js           rTorrent XML-RPC over HTTP (/RPC2, HTTP Basic), one multicall
+src/clients/xmlrpc.js             small XML-RPC codec (no XML dependency), server side for tests
 src/clients/common.js, http.js    error kinds, cookies, login back-off, magnet check; node:http(s)
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
 src/widgets.js                    the `torrents` dashboard widget (manifest `widgets`)
@@ -246,11 +248,11 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
 
-## Cette intégration : qBittorrent / Transmission / Deluge
+## Cette intégration : qBittorrent / Transmission / Deluge / rTorrent
 
 Jusqu'à trois clients (slots 1 à 3), un appareil par client, identité
 `<logiciel>:<slot>` (`qbittorrent:1`) : changer d'adresse garde l'appareil, changer de
-logiciel en crée un autre (Deluge n'a pas d'interrupteur de vitesse alternative). Lecture
+logiciel en crée un autre (Deluge et rTorrent n'ont pas d'interrupteur de vitesse alternative). Lecture
 par le minuteur du hub (10 s à 2 min), `should_poll: false`, `onPoll` en repli. Aucune
 écriture sous `/data`. **Aucun chemin de code ne supprime un torrent** :
 `test/hub.test.js` vérifie qu'aucune requête de suppression ne part.
@@ -275,6 +277,13 @@ par le minuteur du hub (10 s à 2 min), `should_poll: false`, `onPoll` en repli.
   par un dossier puis vérification = `Error` (« Is a directory ») à 100 %, compté « terminé »
   comme sur les deux autres logiciels. Le démon y interroge le DHT au démarrage (torrents privés :
   rien n'y est annoncé).
+- rTorrent : l'image `crazymax/rtorrent-rutorrent` (rTorrent 0.16.25 en 10/2026, nginx devant :
+  XML-RPC sur le port **8000**, tout chemin, ruTorrent sur 8080) sur un réseau en pont, `test:real`
+  et `scripts/probe.mjs` depuis un conteneur Node du même réseau (`RTORRENT_URL=http://<nom>:8000`).
+  Authentification Basic : écrire une ligne `user:$apr1$…` (`openssl passwd -apr1`) dans
+  `/passwd/rpc.htpasswd` puis redémarrer le conteneur. Torrents de test : `mktorrent -p` (présent
+  dans l'image) sur un fichier de `/downloads/temp`, `load.start "" /tmp/x.torrent` ; DHT en `auto` :
+  passer le conteneur sur un réseau `--internal` avant d'ajouter un lien magnet.
 - Pour un vrai téléchargement : créer un `.torrent` (libtorrent Python), le faire seeder
   par Transmission et l'ajouter à qBittorrent avec `torrents/addPeers` vers
   `127.0.0.1:51413` (pas de tracker joignable).
@@ -300,6 +309,18 @@ par le minuteur du hub (10 s à 2 min), `should_poll: false`, `onPoll` en repli.
   `total_wanted: 0` pour un magnet sans métadonnées ; `core.pause_torrent` accepte une
   liste en 1.3 comme en 2.x ; l'interface web peut ne pas être connectée au démon
   (`web.connected` faux) : la connecter au premier hôte de `web.get_hosts`.
+- rTorrent (0.16.25) : entiers en `i8` ; `d.state` 0 = arrêté (`d.stop`, « Stop » de ruTorrent),
+  `d.state` 1 et `d.is_active` 0 = en pause (`d.pause`) ; `d.start` relance un arrêté, `d.resume` un
+  mis en pause. Fichier supprimé puis `d.check_hash` : rTorrent l'arrête (`d.state` 0) avec
+  `d.message` « Download registered as completed, but hash check returned unfinished chunks. » :
+  compté en erreur, pas en pause (le message disparaît au redémarrage de rTorrent). Un
+  `d.message` « Tracker: [...] » (ex. « No DHT nodes available ») n'est pas une erreur. Un magnet
+  sans métadonnées : nom `<HASH>.meta`, `d.is_meta` 1, `d.size_bytes` 1, dossier `.session`. Un
+  champ inconnu de `d.multicall2` fait échouer tout l'appel (« Command "d.x" does not exist. »,
+  faute -500) : `d.is_meta` et `d.load_date` (0.9.7+) sont retirés au besoin. Pas d'espace libre
+  global : `d.free_diskspace` d'un torrent du `directory.default`. `d.custom1` = étiquette de
+  ruTorrent, encodée URL. Hachages en majuscules (mis en minuscules dans le modèle). nginx répond
+  401 en HTML sans identifiants.
 - « Téléchargement terminé » : un torrent ajouté avec ses données déjà sur le disque passe
   par un contrôle puis 100 % — ne pas l'annoncer (vu sur Transmission). D'où la règle « vu
   en téléchargement » (états `downloading`/`stalledDL`/`metaDL`, statut 4, `Downloading`),

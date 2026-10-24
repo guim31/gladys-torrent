@@ -10,6 +10,16 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- rTorrent (0.9 and later, tested on 0.16.25), through its XML-RPC published
+  over HTTP by a web server, as ruTorrent and Flood setups have it (`…/RPC2`,
+  HTTP Basic optional). Its device has the same features as Deluge's: speeds,
+  torrents in progress, paused and completed, current downloads, free space,
+  connection; the same triggers (_Download completed_, _New torrent added_,
+  with the ruTorrent label as category) and actions (pause all, resume all,
+  add a magnet link). No alternative speed limits, as on Deluge.
+
 ## [1.0.2] - 2026-10-23
 
 ### Changed

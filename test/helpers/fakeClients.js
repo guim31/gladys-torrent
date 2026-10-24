@@ -1,12 +1,19 @@
 // -----------------------------------------------------------------------------
 // In-memory torrent clients behind a fake network, for the tests: they answer
-// like the real qBittorrent 4.6 / 5.x Web API, Transmission RPC and Deluge
-// web JSON-RPC, as observed on qbittorrent-nox 4.6.3, transmission-daemon
-// 4.0.5 and Deluge 2.1 (the recorded answers are in test/fixtures/). Each
+// like the real qBittorrent 4.6 / 5.x Web API, Transmission RPC, Deluge web
+// JSON-RPC and rTorrent XML-RPC, as observed on qbittorrent-nox 4.6.3,
+// transmission-daemon 4.0.5, Deluge 2.1 and rTorrent 0.16.25 (the recorded
+// answers are in test/fixtures/). Each
 // keeps the requests it received, never the passwords.
 // -----------------------------------------------------------------------------
 
 import { readFileSync } from 'node:fs';
+import {
+  decodeCall,
+  decodeResponse,
+  encodeFault,
+  encodeResponse,
+} from '../../src/clients/xmlrpc.js';
 
 export const fixture = (path) =>
   JSON.parse(readFileSync(new URL(`../fixtures/${path}`, import.meta.url), 'utf8'));
@@ -446,6 +453,168 @@ export class FakeDeluge {
       default:
         return failure(2, 'Unknown method');
     }
+  }
+}
+
+// --- rTorrent -------------------------------------------------------------------
+
+// The rows of a recorded system.multicall answer (test/fixtures/rtorrent/),
+// as torrents keyed by d.multicall2 field ("d.name=" → value).
+const READ_FIELDS = [
+  'd.hash=',
+  'd.name=',
+  'd.complete=',
+  'd.is_active=',
+  'd.state=',
+  'd.message=',
+  'd.down.rate=',
+  'd.completed_bytes=',
+  'd.size_bytes=',
+  'd.down.total=',
+  'd.is_hash_checking=',
+  'd.custom1=',
+  'd.free_diskspace=',
+  'd.directory=',
+  'd.is_meta=',
+  'd.load_date=',
+  'd.wanted_chunks=',
+];
+
+export const rtorrentFixture = (name = 'read-0.16.25.xml') =>
+  decodeResponse(readFileSync(new URL(`../fixtures/rtorrent/${name}`, import.meta.url), 'utf8'));
+
+export class FakeRtorrent {
+  /**
+   * @param {object} [options]
+   * @param {string} [options.username] HTTP Basic, none when both are empty
+   * @param {string} [options.password]
+   * @param {boolean} [options.legacy] an rTorrent before 0.9.7 (no d.is_meta, d.load_date)
+   * @param {string} [options.recorded] the fixture file
+   */
+  constructor({ username = '', password = '', legacy = false, recorded } = {}) {
+    const [[version], [down], [up], [directory], [rows]] = rtorrentFixture(recorded);
+    this.username = username;
+    this.password = password;
+    this.legacy = legacy;
+    this.version = version;
+    this.down = down;
+    this.up = up;
+    this.directory = directory;
+    this.torrents = new Map(
+      rows.map((row) => {
+        const torrent = Object.fromEntries(READ_FIELDS.map((f, i) => [f, row[i]]));
+        // Not in the recorded answers: what rTorrent 0.16.25 gave for them.
+        torrent['d.wanted_chunks='] ??= torrent['d.complete='] === 1 ? 0 : 12;
+        return [row[0], torrent];
+      }),
+    );
+    this.online = true;
+    this.requests = [];
+  }
+
+  update(hash, fields) {
+    this.torrents.set(hash, { ...(this.torrents.get(hash) ?? {}), ...fields });
+  }
+
+  known(command) {
+    return !(this.legacy && ['d.is_meta=', 'd.load_date='].includes(command));
+  }
+
+  dispatch(method, params) {
+    this.requests.push({ method });
+    const torrent = () => this.torrents.get(params[0]);
+    switch (method) {
+      case 'system.multicall':
+        return params[0].map(({ methodName, params: inner }) => {
+          try {
+            return [this.dispatch(methodName, inner)];
+          } catch (fault) {
+            return { faultCode: fault.code, faultString: fault.message };
+          }
+        });
+      case 'system.client_version':
+        return this.version;
+      case 'throttle.global_down.rate':
+        return this.down;
+      case 'throttle.global_up.rate':
+        return this.up;
+      case 'directory.default':
+        return this.directory;
+      case 'd.multicall2': {
+        const fields = params.slice(2);
+        const unknown = fields.find((f) => !READ_FIELDS.includes(f) || !this.known(f));
+        if (unknown) {
+          throw Object.assign(new Error(`Command "${unknown.slice(0, -1)}" does not exist.`), {
+            code: -500,
+          });
+        }
+        return [...this.torrents.values()].map((t) => fields.map((f) => t[f]));
+      }
+      case 'd.stop':
+      case 'd.start':
+      case 'd.pause':
+      case 'd.resume': {
+        const t = torrent();
+        if (!t) {
+          throw Object.assign(new Error('Could not find info-hash.'), { code: -501 });
+        }
+        if (method === 'd.stop') {
+          Object.assign(t, { 'd.state=': 0, 'd.is_active=': 0 });
+        } else if (method === 'd.start') {
+          Object.assign(t, { 'd.state=': 1, 'd.is_active=': 1 });
+        } else if (method === 'd.pause') {
+          t['d.is_active='] = 0;
+        } else if (t['d.state='] === 1) {
+          t['d.is_active='] = 1;
+        }
+        return 0;
+      }
+      case 'load.start': {
+        const hash = String(params[1])
+          .match(/btih:([a-z0-9]+)/i)?.[1]
+          ?.toUpperCase();
+        if (hash && !this.torrents.has(hash)) {
+          this.update(hash, {
+            ...Object.fromEntries(READ_FIELDS.map((f) => [f, 0])),
+            'd.hash=': hash,
+            'd.name=': `${hash}.meta`,
+            'd.state=': 1,
+            'd.is_active=': 1,
+            'd.message=': 'Tracker: [No DHT nodes available for peer search.]',
+            'd.size_bytes=': 1,
+            'd.custom1=': '',
+            'd.directory=': '/data/rtorrent/.session',
+            'd.is_meta=': 1,
+            'd.wanted_chunks=': 1,
+          });
+        }
+        return 0;
+      }
+      default:
+        throw Object.assign(new Error(`method '${method}' not defined`), { code: -506 });
+    }
+  }
+
+  handle(url, { headers = {}, body } = {}) {
+    if (new URL(url).pathname !== '/RPC2') {
+      return text(404, '<html><body>404 Not Found</body></html>');
+    }
+    if (this.username || this.password) {
+      const expected = `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`;
+      if (headers.authorization !== expected) {
+        return text(401, '<html><body>401 Authorization Required</body></html>', {
+          'www-authenticate': 'Basic realm="rTorrent XMLRPC restricted access"',
+        });
+      }
+    }
+    const { method, params } = decodeCall(body);
+    let answer;
+    try {
+      answer = encodeResponse(this.dispatch(method, params));
+    } catch (fault) {
+      answer = encodeFault(fault.code ?? -500, fault.message);
+    }
+    return { status: 200, headers: { 'content-type': 'text/xml' }, body: answer };
   }
 }
 

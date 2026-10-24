@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // Conformity with the Gladys core, on every device discovered from realistic
 // fixtures (answers recorded on qbittorrent-nox 4.6.3, transmission-daemon
-// 4.0.5 and Deluge 2.1): one to three clients of every software, before and
+// 4.0.5, Deluge 2.1 and rTorrent 0.16.25): one to three clients of every software, before and
 // after a reading, in every feature-name language.
 //
 // The table (test/fixtures/gladys-feature-table.json) is extracted from the
@@ -15,7 +15,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { QB_CONFIG, THREE_CLIENTS, createWorld } from './helpers/world.js';
+import { QB_CONFIG, THREE_CLIENTS, WITH_RTORRENT, createWorld } from './helpers/world.js';
 
 const table = JSON.parse(
   await readFile(new URL('./fixtures/gladys-feature-table.json', import.meta.url), 'utf8'),
@@ -36,6 +36,10 @@ const scenarios = [
   { label: 'French names', config: { ...THREE_CLIENTS, language: 'fr' }, count: 3 },
   { label: 'German names', config: { ...THREE_CLIENTS, language: 'de' }, count: 3 },
   { label: 'Spanish names', config: { ...THREE_CLIENTS, language: 'es' }, count: 3 },
+  { label: 'rTorrent', config: WITH_RTORRENT, count: 3 },
+  { label: 'rTorrent, French names', config: { ...WITH_RTORRENT, language: 'fr' }, count: 3 },
+  { label: 'rTorrent, German names', config: { ...WITH_RTORRENT, language: 'de' }, count: 3 },
+  { label: 'rTorrent, Spanish names', config: { ...WITH_RTORRENT, language: 'es' }, count: 3 },
 ];
 
 for (const scenario of scenarios) {

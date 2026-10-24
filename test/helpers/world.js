@@ -8,7 +8,13 @@
 
 import { createFakeGladys } from '@gladysassistant/integration-sdk/testing';
 import { registerHandlers } from '../../src/app.js';
-import { FakeDeluge, FakeQbittorrent, FakeTransmission, createNetwork } from './fakeClients.js';
+import {
+  FakeDeluge,
+  FakeQbittorrent,
+  FakeRtorrent,
+  FakeTransmission,
+  createNetwork,
+} from './fakeClients.js';
 
 // The integration logs every change; keep the test output readable.
 process.env.LOG_LEVEL ??= 'silent';
@@ -16,6 +22,7 @@ process.env.LOG_LEVEL ??= 'silent';
 export const QB_URL = 'http://192.0.2.10:8080';
 export const TR_URL = 'http://192.0.2.11:9091';
 export const DE_URL = 'https://198.51.100.12:8112';
+export const RT_URL = 'http://198.51.100.13';
 
 export const QB_CONFIG = {
   client_1_type: 'qbittorrent',
@@ -23,6 +30,24 @@ export const QB_CONFIG = {
   client_1_username: 'admin',
   client_1_password: 'secret',
   client_1_name: 'NAS',
+  language: 'en',
+};
+
+// rTorrent behind HTTP Basic, in the third slot.
+export const WITH_RTORRENT = {
+  client_1_type: 'qbittorrent',
+  client_1_url: '192.0.2.10',
+  client_1_username: 'admin',
+  client_1_password: 'secret',
+  client_1_name: 'NAS',
+  client_2_type: 'transmission',
+  client_2_url: '192.0.2.11:9091',
+  client_2_username: 'gladys',
+  client_2_password: 'secret',
+  client_3_type: 'rtorrent',
+  client_3_url: '198.51.100.13',
+  client_3_username: 'gladys',
+  client_3_password: 'secret',
   language: 'en',
 };
 
@@ -54,6 +79,7 @@ export const defaultServers = () => ({
   [QB_URL]: new FakeQbittorrent(),
   [TR_URL]: new FakeTransmission(),
   [DE_URL]: new FakeDeluge(),
+  [RT_URL]: new FakeRtorrent({ username: 'gladys', password: 'secret' }),
 });
 
 /**
@@ -91,6 +117,7 @@ export async function createWorld({
     qb: servers[QB_URL],
     tr: servers[TR_URL],
     de: servers[DE_URL],
+    rt: servers[RT_URL],
     app,
     hub: app.hub,
     clock,
@@ -108,4 +135,4 @@ export async function createAll(world) {
   }
 }
 
-export { FakeDeluge, FakeQbittorrent, FakeTransmission };
+export { FakeDeluge, FakeQbittorrent, FakeRtorrent, FakeTransmission };

@@ -1,14 +1,15 @@
-# qBittorrent / Transmission / Deluge
+# qBittorrent / Transmission / Deluge / rTorrent
 
 Verfolge und steuere die Torrent-Clients deines Heimservers von Gladys aus, in
-deinem lokalen Netzwerk: **qBittorrent**, **Transmission** und **Deluge**.
+deinem lokalen Netzwerk: **qBittorrent**, **Transmission**, **Deluge** und
+**rTorrent**.
 Sieh die Download- und Upload-Geschwindigkeit und die laufenden Downloads,
 drossle alles, wenn ein Film auf dem Fernseher startet, pausiere alles, und
 lass dich benachrichtigen, wenn ein Download fertig ist.
 
 > **Mit den echten Programmen getestet, aber noch nicht in einem echten
 > Zuhause: Rückmeldungen willkommen.** Diese Integration wurde gegen
-> qBittorrent 4.6.3 und 5.2.4, Transmission 4.0.5 und Deluge 2.1 getestet, die
+> qBittorrent 4.6.3 und 5.2.4, Transmission 4.0.5, Deluge 2.1 und rTorrent 0.16.25 (mit ruTorrent) getestet, die
 > daneben liefen, mit Downloads untereinander, aber noch nicht in einer echten
 > Gladys-Installation mit deinem NAS, deinem Reverse-Proxy oder deinem Docker.
 > Wenn etwas nicht wie beschrieben funktioniert, sag es bitte im
@@ -30,9 +31,14 @@ umkehrbar; das Hinzufügen von Magnet-Links ist aus, bis du es erlaubst.
     den Desktop-Versionen;
   - **Deluge** mit seiner **Weboberfläche** (`deluge-web`, Port 8112), mit
     seinem Daemon verbunden (die Integration nutzt den Daemon-Port 58846
-    nicht direkt).
+    nicht direkt);
+  - **rTorrent** 0.9 oder neuer, dessen **XML-RPC per HTTP** von einem
+    Webserver veröffentlicht wird, wie bei ruTorrent, Flood und Seedboxen
+    (eine Adresse, die auf `/RPC2` endet). Der SCGI-Port oder -Socket von
+    rTorrent allein reicht nicht: Er spricht kein HTTP.
 - Benutzername und Passwort der Weboberfläche (Deluge: nur das Passwort,
-  `deluge`, solange du es nicht geändert hast).
+  `deluge`, solange du es nicht geändert hast; rTorrent: die HTTP-Anmeldung
+  des Webservers, falls er eine verlangt).
 
 Bei **Transmission** muss die Adresse von Gladys erlaubt sein: Trage sie in
 `rpc-whitelist` in der `settings.json` ein, oder schalte die Whitelist aus
@@ -46,7 +52,9 @@ Bei **Transmission** muss die Adresse von Gladys erlaubt sein: Trage sie in
    gib seine **Adresse** ein (zum Beispiel `192.168.1.10:8080`), den
    **Benutzernamen** und das **Passwort**, und optional einen **Namen**. Ohne
    Port nimmt die Integration den Standard der Software: 8080 für
-   qBittorrent, 9091 für Transmission, 8112 für Deluge. Zwei oder drei
+   qBittorrent, 9091 für Transmission, 8112 für Deluge, 80 für rTorrent (dessen Adresse `/RPC2` erhält, wenn ihr
+   Pfad nicht schon so endet: `192.168.1.10:8000` für das Image
+   `crazymax/rtorrent-rutorrent`). Zwei oder drei
    Clients? Fülle auch die Abschnitte _Zweiter Client_ und _Dritter Client_
    aus: eine andere Software oder eine weitere Instanz derselben.
 3. Speichere und klicke auf **Verbindung testen**: Die Meldung unter der
@@ -76,17 +84,17 @@ Optionen:
 
 ## Das Gerät jedes Clients
 
-| Funktion                           | Was es ist                                                                       |
-| ---------------------------------- | -------------------------------------------------------------------------------- |
-| Download-Geschwindigkeit           | Geschwindigkeit aller Downloads, in kB/s                                         |
-| Upload-Geschwindigkeit             | Geschwindigkeit aller Uploads (Seeding), in kB/s                                 |
-| Laufende Torrents                  | Weder fertige noch pausierte Torrents: ladend, wartend, blockiert, geprüft       |
-| Pausierte Torrents                 | Nicht fertige, pausierte Torrents                                                |
-| Fertige Torrents                   | Vollständig geladene Torrents, ob im Seeding oder nicht, pausiert oder nicht     |
-| Aktuelle Downloads                 | Text: die ersten drei laufenden Downloads mit ihrem Prozentsatz                  |
-| Freier Speicherplatz               | Freier Platz im Download-Ordner, in GB                                           |
-| Alternative Geschwindigkeitslimits | Schalter: die alternativen Geschwindigkeitslimits des Clients (nicht bei Deluge) |
-| Client verbunden                   | 1, solange der Client antwortet, sonst 0                                         |
+| Funktion                           | Was es ist                                                                                    |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| Download-Geschwindigkeit           | Geschwindigkeit aller Downloads, in kB/s                                                      |
+| Upload-Geschwindigkeit             | Geschwindigkeit aller Uploads (Seeding), in kB/s                                              |
+| Laufende Torrents                  | Weder fertige noch pausierte Torrents: ladend, wartend, blockiert, geprüft                    |
+| Pausierte Torrents                 | Nicht fertige, pausierte Torrents                                                             |
+| Fertige Torrents                   | Vollständig geladene Torrents, ob im Seeding oder nicht, pausiert oder nicht                  |
+| Aktuelle Downloads                 | Text: die ersten drei laufenden Downloads mit ihrem Prozentsatz                               |
+| Freier Speicherplatz               | Freier Platz im Download-Ordner, in GB                                                        |
+| Alternative Geschwindigkeitslimits | Schalter: die alternativen Geschwindigkeitslimits des Clients (nicht bei Deluge und rTorrent) |
+| Client verbunden                   | 1, solange der Client antwortet, sonst 0                                                      |
 
 Die drei Zähler ergeben zusammen die Gesamtzahl der Torrents. Ein Torrent,
 der nach Erreichen seines Verhältnisses pausiert wurde, zählt als fertig,
@@ -96,8 +104,16 @@ Die _alternativen Geschwindigkeitslimits_ sind die langsameren Limits, die du
 im Client selbst einstellst: in qBittorrent Optionen → Geschwindigkeit →
 _Alternative Geschwindigkeitsbegrenzungen_; in Transmission der
 _Schildkrötenmodus_ (Einstellungen → Geschwindigkeit → _Alternative
-Geschwindigkeitsbegrenzungen_). Deluge hat diesen Modus nicht: Sein Gerät hat
-keinen Schalter.
+Geschwindigkeitsbegrenzungen_). Deluge und rTorrent haben diesen Modus nicht,
+also auch keinen Schalter am Gerät.
+
+Bei rTorrent stoppt _Alle pausieren_ die Torrents (_Stop_ in ruTorrent), und
+_Alle fortsetzen_ startet sie wieder und setzt auch die in ruTorrent
+pausierten fort. Ein Torrent, den rTorrent mit einer Fehlermeldung gestoppt
+hat (fehlende Dateien …), zählt als laufend, nicht als pausiert. rTorrent hat
+keinen globalen freien Speicher: Die Integration zeigt den der Partition eines
+Torrents im Standard-Downloadordner, und nichts, solange es keinen Torrent
+gibt.
 
 In der Liste der Downloads stehen die, die gerade Daten empfangen, vorne, die
 schnellsten zuerst. Ein Prozentsatz wird abgerundet: 99 % bis zum Ende.
@@ -114,7 +130,7 @@ Tasten:
 - **Alle fortsetzen**: setzt alle Torrents fort;
 - **Alternatives Tempo**: schaltet die alternativen Geschwindigkeitslimits ein,
   oder aus, wenn sie an sind (ein Häkchen zeigt es). Fehlt, wenn nur Deluge
-  angezeigt wird.
+  oder rTorrent angezeigt wird.
 
 Das Widget funktioniert, sobald die Integration konfiguriert ist, schon vor
 dem Hinzufügen der Geräte.
@@ -127,7 +143,8 @@ dem Hinzufügen der Geräte.
   Torrent, der mit schon vorhandenen Dateien hinzugefügt wurde (geprüft, dann
   vollständig), zählt nicht, ebenso wenig ein fertiger Torrent, der erneut
   geprüft wird. Filter: der Client und die **Kategorie** (qBittorrent) bzw.
-  das **Label** (Transmission 4, Deluge mit dem Label-Plugin). Variablen: der
+  das **Label** (Transmission 4, Deluge mit dem Label-Plugin,
+  ruTorrent). Variablen: der
   Name des Torrents, der Name des Clients, die Kategorie und die Größe in GB.
 - **Neuer Torrent hinzugefügt**: Ein Torrent wurde dem Client hinzugefügt,
   von wem auch immer (du, Sonarr, Radarr, eine Browser-Erweiterung…). Ein
@@ -145,7 +162,7 @@ wurde, wird gemeldet, sobald er wieder antwortet.
 - **Alle Torrents pausieren**: auf einem Client oder auf allen.
 - **Alle Torrents fortsetzen**: auf einem Client oder auf allen.
 - **Alternative Geschwindigkeitslimits**: _An_ oder _Aus_, auf einem Client
-  oder auf allen, die sie haben (Deluge wird übersprungen). Die Ausgabe ist die
+  oder auf allen, die sie haben (Deluge und rTorrent werden übersprungen). Die Ausgabe ist die
   Zahl der Clients, die angenommen haben.
 - **Magnet-Link hinzufügen**: fügt einen Torrent über seinen Link
   `magnet:?xt=urn:btih:…` hinzu, auf dem gewählten Client oder dem ersten der
@@ -173,7 +190,7 @@ Die Integration liest jeden Client mit ihrem eigenen Timer (standardmäßig alle
 30 Sekunden), nicht über den Gladys-Planer. Eine Lesung ist leicht:
 qBittorrent schickt nur, was sich seit der vorigen Lesung geändert hat,
 Transmission beantwortet vier kleine Aufrufe mit nur den nötigen Feldern,
-Deluge einen Aufruf. Ein Client, der nicht mehr antwortet, wird 15 Sekunden
+Deluge und rTorrent je einen Aufruf. Ein Client, der nicht mehr antwortet, wird 15 Sekunden
 später erneut gelesen. Ein Wert, der sich nicht ändert, wird trotzdem alle 6
 Stunden an Gladys gesendet.
 
@@ -204,6 +221,12 @@ versucht es sofort erneut.
 - **„nicht mit ihrem Daemon verbunden“** (Deluge): Öffne die Weboberfläche,
   den Verbindungsmanager, und verbinde sie mit ihrem Daemon; danach verbindet
   die Integration sie selbst mit dem ersten Daemon der Liste.
+- **rTorrent: „kein solcher Client unter dieser Adresse“**: Die Adresse muss
+  zum XML-RPC von rTorrent führen (`…/RPC2`, oder `…/plugins/rpc/rpc.php`
+  mit dem ruTorrent-Plugin _rpc_), nicht zur ruTorrent-Seite; das
+  ruTorrent-Plugin _httprpc_ spricht ein anderes Protokoll. Teste es vom
+  Gladys-Rechner aus:
+  `curl -u user:password -d '<methodCall><methodName>system.client_version</methodName></methodCall>' http://192.168.1.10/RPC2`.
 - **qBittorrent hinter einem Reverse-Proxy lehnt die Anmeldung ab**: Schalte
   _Host-Header-Validierung aktivieren_ aus oder trage den Namen dort ein
   (Optionen → Weboberfläche), oder erlaube die Adresse von Gladys unter
@@ -221,6 +244,9 @@ versucht es sofort erneut.
 - Kein Löschen von Torrents oder Dateien, mit Absicht.
 - Deluge: keine alternativen Geschwindigkeitslimits (Deluge selbst hat keine);
   für den Kategorie-Filter ist das Label-Plugin nötig.
+- rTorrent: keine alternativen Geschwindigkeitslimits; der freie Speicher ist
+  der der Partition eines Torrents; die Kategorie ist das ruTorrent-Label; der
+  SCGI-Socket ohne Webserver wird nicht unterstützt.
 - Transmission: Die Kategorie ist das erste Label (Transmission 4.0 und
   neuer).
 - Die Geschwindigkeiten sind die des ganzen Clients, nicht eines Torrents.
@@ -229,4 +255,5 @@ versucht es sofort erneut.
   gesehen.
 - Die Namen der Funktionen werden beim Hinzufügen des Geräts festgelegt: Eine
   spätere Änderung der Sprache benennt in Gladys nichts um.
-- Nicht verbunden mit den Projekten qBittorrent, Transmission oder Deluge.
+- Nicht verbunden mit den Projekten qBittorrent, Transmission, Deluge oder
+  rTorrent.
